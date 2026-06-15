@@ -1,0 +1,124 @@
+# Channel Studio AI – Super Simple Projects & Tasks
+
+**Channel Goal**: Make educational faceless YouTube videos (e.g., AI Governance topics) using **AI to speed up work**, add honest affiliate links, and get videos live. Team of 10-year-olds can follow with adult supervision.
+
+**One-Time Setup Project (Do Once)**
+
+**Goal**: Set up folders, accounts, and AI access.
+
+**Tasks** (use stickers):
+
+1. **Create Folders** – Project Manager + Adult (D:\Studio with same subfolders as before).
+2. **Set Up Accounts** – Adult: YouTube channel “Channel Studio AI”, 1–2 affiliate programs (Amazon, Canva, ElevenLabs, etc.), free AI tools.
+3. **AI Tools Ready** (free tiers first):
+    - Grok / ChatGPT / Claude (scripting)
+    - ElevenLabs or CapCut TTS (voice)
+    - Canva or CapCut (editing + thumbnails)
+    - Grok Imagine or free image/video tools (visuals)
+4. **Print This Guide** & role cards.
+
+**Main Project: Make One Faceless YouTube Video**
+
+**Goal**: Complete a 2–5 min video with AI help + affiliates.
+
+**Phase 1: Planning (Day 1)**
+
+**Tasks & AI Help**:
+
+- Read Request (Researcher/Writer)
+- **AI for Script**: Use Grok, ChatGPT, or Claude. Prompt: “Write a 300-word simple script for kids about [Topic: AI Authorization]. Include intro, explanation, example, conclusion. Educational tone.” Save to Scripts folder.232
+- Pick 1 affiliate tool (Researcher/Writer) – AI can suggest: “Recommend good beginner AI tools for this topic with affiliate programs.”
+
+**Phase 2: Gather Stuff (Day 2)**
+
+**Tasks & AI Help**:
+
+- **AI for Visuals**: Use Grok Imagine, Canva Magic, or free tools (Pexels + AI generator). Prompt for images/clips: “Generate educational images of AI locks, authorization shields, computers approving access.” Save to Visuals folder.06
+- **AI for Voiceover**: ElevenLabs (free tier), CapCut TTS, or Grok tools. Paste script → generate natural voice. Save to Voiceovers folder.2
+- Start thumbnail (Visuals Hunter) – AI in Canva or Grok Imagine.
+
+**Phase 3: Build Video (Day 3)**
+
+**Tasks & AI Help**:
+
+- **AI-Assisted Editing**: Use CapCut (AI auto-captions, templates, effects) or Canva. Import visuals + voiceover. AI can suggest scenes or auto-assemble in tools like InVideo/CapCut AI.8
+- Add music (YouTube Audio Library), transitions, text on screen.
+- Export MP4 to Videos folder.
+- Finish AI-generated thumbnail.
+
+**Phase 4: Get Ready to Launch (Day 4)**
+
+**Tasks & AI Help**:
+
+- **AI for SEO**: Use Grok/ChatGPT/vidIQ free or free tools like iutu.be. Prompt: “Create YouTube title, description with timestamps + affiliate disclosure, and 10–15 tags for [video topic].”1519
+- Reviewer watches + checks (with AI summary if needed).
+
+**Phase 5: Upload & Go Live (Day 5)**
+
+**Tasks** (less AI here – manual clicks in YouTube Studio):
+
+- Upload, add AI-generated metadata, thumbnail, cards/end screen.
+- Set Public or Schedule. Pin affiliate comment. Save to Output\Completed.
+
+**Phase 6: Review & Improve (Day 6–7)**
+
+**Tasks & AI Help**:
+
+- Team watches video.
+- **AI for Journal**: Ask Grok/ChatGPT: “Review this video performance and suggest 1 improvement for next one.” Update Journal folder.
+
+**Master Checklist (Every Video – With AI Icons)**
+
+**Planning**
+
+- Script (AI)
+- Affiliate chosen
+
+**Make Video**
+
+- Visuals (AI)
+- Voiceover (AI)
+- Video built (AI assist)
+- Thumbnail (AI)
+
+**Launch**
+
+- Title/Description/Tags (AI)
+- Uploaded & Public
+
+**Review**
+
+- Journal (AI help)
+
+**Weekly Project: Team Meeting (15 min)**
+
+**Tasks**:
+
+1. Review last video (use AI summary).
+2. Pick next topic.
+3. Assign roles.
+4. Celebrate!
+
+**How AI Fits Each Task (Simple Table for Kids)**
+
+| **Task** | **AI Tool Examples** | **How to Use (Prompt Example)** | **Why It Helps Kids** |
+| --- | --- | --- | --- |
+| Script Writing | Grok, ChatGPT, Claude | “Write simple script about AI Authorization” | Fast ideas + structure |
+| Visuals/Images | Grok Imagine, Canva AI, Leonardo | “Create images of AI security lock” | No drawing needed |
+| Voiceover | ElevenLabs, CapCut TTS | Paste script → Generate voice | Sounds pro, no recording |
+| Video Building | CapCut AI, Canva, InVideo | Auto-captions + templates | Drag & drop + smart suggestions |
+| Title/Desc/Tags | Grok, vidIQ free, ChatGPT | “Optimize YouTube metadata for [script]” | Better views & SEO |
+| Thumbnail | Grok Imagine, Canva Magic | “Bright thumbnail: AI lock + big text” | Click-worthy fast |
+| Review/Improve | Grok/ChatGPT | “Suggest improvements for this video” | Learn quicker |
+
+**Tips**: Start with **free tiers**. Adult supervises accounts. Always check AI output for accuracy + add human touch. Combine AI speed with team creativity!
+
+This workflow is **repeatable**, AI-powered, and simple. Kids will finish videos faster and learn real skills.
+
+**Want me to create next?**
+
+- Printable PDF checklist
+- Ready AI prompts pack for AI Authorization video
+- Example full script + metadata generated by me (as Grok)
+
+Tell me! 🚀
