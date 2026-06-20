@@ -1,0 +1,22 @@
+{
+  "name": "channel-studio-ai",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Channel Studio AI — a governed faceless video production runtime. Claude processes. Code governs. Records prove. Hooks block.",
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit",
+    "test": "node --test",
+    "orchestrate": "node orchestrator/runner.ts",
+    "status": "node orchestrator/runner.ts status",
+    "gate:00": "bash gates/check_phase_00.sh"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}
