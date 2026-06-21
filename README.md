@@ -94,6 +94,26 @@ node orchestrator/runner.ts run all    # run gates in order, halt on first failu
 - After **3** failed repair attempts a phase emits
   `records/PHASE_0N_FAIL.md` (via `gateUtils emit-fail`) and the line halts.
 
+## Proof integrity — a PASS record is not valid merely because it exists
+
+A PASS record is not valid merely because it exists.
+
+A PASS record must validate **structurally** (against
+`schemas/pass-record.schema.json`) and must **verify against current hashed
+outputs** — its stored content hash must equal a fresh recomputation over the
+files it lists in `hashedOutputs`.
+
+Hooks use **validation, not existence**, to determine whether a phase may
+advance. A missing, malformed, or stale PASS record unlocks nothing; a
+malformed FAIL record does not count as resolved.
+
+```bash
+node gates/shared/gateUtils.ts verify-pass-current 00   # structural + currency check
+```
+
+The PHASE 00 gate runs this verifier as its final step, so a passing gate
+guarantees the emitted record is both schema-valid and current.
+
 ## Live integration rule
 
 When a phase needs credentials or paid APIs that are unavailable, do not block

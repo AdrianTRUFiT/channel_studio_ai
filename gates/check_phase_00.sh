@@ -83,8 +83,12 @@ TEST_SUMMARY="npm install ok; tsc --noEmit clean; schemas valid; orchestrator st
 node "$UTILS" emit-pass "$PHASE" --files "$HASHED_FILES" --tests "$TEST_SUMMARY" \
   || fail "could not emit PASS record"
 
-step "verifying emitted PASS record validates"
+step "verifying emitted PASS record schema"
 node "$UTILS" validate-record "records/PHASE_${PHASE}_PASS.md" \
   || fail "emitted PASS record failed schema validation"
 
-printf '\nGATE PASS (phase %s): records/PHASE_%s_PASS.md is valid.\n' "$PHASE" "$PHASE"
+step "verifying PASS record is CURRENT against hashed outputs"
+node "$UTILS" verify-pass-current "$PHASE" \
+  || fail "emitted PASS record is not current (stale/mismatched content hash)"
+
+printf '\nGATE PASS (phase %s): records/PHASE_%s_PASS.md is valid and current.\n' "$PHASE" "$PHASE"

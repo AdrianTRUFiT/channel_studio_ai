@@ -2,9 +2,10 @@
 #
 # hooks/pre_phase_guard.sh — Claude Code PreToolUse guard.
 #
-# Blocks edits/commands that target a later phase's artifacts when the PRIOR
-# phase has no PASS record. Enforces "no prior PASS, no advance" at the tool
-# boundary, so the rule cannot be bypassed by a model simply deciding to move on.
+# Blocks edits/commands that target a later phase's artifacts unless the PRIOR
+# phase holds a PASS record that is structurally valid AND current. Validity is
+# decided by `gateUtils verify-pass-current` (via require-prior), NOT by mere
+# file existence: a missing, malformed, or stale PASS record unlocks nothing.
 #
 # Wiring (settings.json), matching Edit|Write|Bash:
 #   "hooks": {
@@ -18,6 +19,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+UTILS="$ROOT/gates/shared/gateUtils.ts"
 INPUT="$(cat 2>/dev/null || true)"
 
 # Extract ONLY the targeted path(s)/command from the tool call — never file
@@ -46,9 +48,10 @@ N="$(printf '%s\n' "$TOKENS" | grep -oE '[0-9]{2}' | sort -rn | head -n1)"
 # PHASE 00 has no prior; always allowed.
 [ "$N" = "00" ] && exit 0
 
-PRIOR="$(printf '%02d' $((10#$N - 1)))"
-if [ ! -f "$ROOT/records/PHASE_${PRIOR}_PASS.md" ]; then
-  echo "BLOCKED by pre_phase_guard: work on PHASE ${N} requires a valid records/PHASE_${PRIOR}_PASS.md, which does not exist. No prior PASS, no advance." >&2
+# Ask gateUtils whether PHASE N may begin (prior PASS must be valid AND current).
+if ! REASON="$(node "$UTILS" require-prior "$N" 2>&1)"; then
+  echo "BLOCKED by pre_phase_guard: work on PHASE ${N} is not unlocked. ${REASON}" >&2
+  echo "No valid, current prior PASS, no advance." >&2
   exit 2
 fi
 

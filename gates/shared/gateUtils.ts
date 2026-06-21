@@ -3,66 +3,83 @@
  *
  * Doctrine: Claude processes. Code governs. Records prove. Hooks block.
  *
- * This module is both:
- *   1. an importable library (used by the orchestrator and tests), and
- *   2. a CLI invoked by the bash gate scripts:
+ * Proof model (strengthened): a PASS record is NOT valid merely because it
+ * exists. It must (a) parse, (b) validate against pass-record.schema.json,
+ * (c) match its phase id and gate-script path, and (d) be CURRENT — its stored
+ * content hash must equal a recomputation over the hashed outputs it lists.
+ * Hooks and the orchestrator use this verification, never bare file existence.
  *
- *        node gates/shared/gateUtils.ts <command> [args...]
+ * Two roots are distinguished:
+ *   - sourceRoot(): the real checked-out repo (where schemas + gates live).
+ *   - dataRoot():   where records + hashed outputs are read; overridable via
+ *                   the CSAI_ROOT env var so tests can run against isolated
+ *                   fixtures WITHOUT touching the real records/ ledger.
  *
- * Commands:
- *   prior-pass <phaseId>                    exit 0 if the prior phase has a valid PASS record
- *   require-prior <phaseId>                 like prior-pass, but exits 1 with a message if missing
- *   has-pass <phaseId>                      exit 0 if THIS phase already has a valid PASS record
- *   hash <file> [file...]                   print "sha256:<hex>" content hash of the files
- *   validate-schemas                        verify the three runtime schemas parse and self-check
- *   validate-record <recordFile>            extract + validate the JSON payload in a record file
- *   emit-pass <phaseId> --files a,b --tests "summary"
- *                                           write records/PHASE_0N_PASS.md (idempotent, append-only)
- *   emit-fail <phaseId> --command "<cmd>" --error "<text>" \
- *             --repairs "a;b;c" --cause "<text>" --next "<text>"
- *                                           write records/PHASE_0N_FAIL.md
+ * CLI (invoked by the bash gates and hooks):
+ *   node gates/shared/gateUtils.ts <command> [args...]
+ *
+ *   require-prior <phaseId>      exit 0 if <phaseId> may begin (prior PASS is current)
+ *   has-pass <phaseId>           exit 0 if <phaseId> has a valid current PASS record
+ *   verify-pass-current <id>     exit 0 if PASS record is structurally valid AND current
+ *   active-phase                 print the lowest phase id lacking a valid current PASS
+ *   stop-check                   exit 0 if it is OK to stop, 1 (with reason) if a phase is unresolved
+ *   hash <file> [file...]        print "sha256:<hex>" content hash of the files
+ *   validate-schemas             verify the three runtime schemas + phase registry
+ *   validate-record <file>       extract + validate the JSON payload in a record file
+ *   emit-pass <id> --files a,b --tests "summary"   write records/PHASE_0N_PASS.md
+ *   emit-fail <id> --command .. --error .. --repairs "a;b" --cause .. --next ..
+ *   list-records                 list PASS/FAIL record files
  */
 
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import {
-  existsSync,
-  readFileSync,
-  writeFileSync,
-  readdirSync,
-} from "node:fs";
+import { existsSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { PHASES, getPhase, priorPhaseOf, type PhaseDef } from "../../src/phases.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-/** Absolute path to the repository root (two levels up from gates/shared). */
-export function repoRoot(): string {
+/** Absolute path to the real checked-out repo root (two levels up). */
+export function sourceRoot(): string {
   return resolve(__dirname, "..", "..");
 }
 
-function abs(rel: string): string {
-  return join(repoRoot(), rel);
+/**
+ * Root for records + hashed outputs. Overridable via CSAI_ROOT so tests can
+ * point verification at an isolated fixture tree and never mutate real records.
+ */
+export function dataRoot(): string {
+  const override = process.env.CSAI_ROOT;
+  return override ? resolve(override) : sourceRoot();
 }
 
-/** Path to a phase's PASS record file. */
+/** Back-compat alias used by the orchestrator (real repo root). */
+export function repoRoot(): string {
+  return sourceRoot();
+}
+
+function srcAbs(rel: string): string {
+  return join(sourceRoot(), rel);
+}
+function dataAbs(rel: string): string {
+  return join(dataRoot(), rel);
+}
+
+/** Path to a phase's PASS record file (under the data root). */
 export function passRecordPath(phaseId: string): string {
-  return abs(join("records", `PHASE_${phaseId}_PASS.md`));
+  return dataAbs(join("records", `PHASE_${phaseId}_PASS.md`));
 }
 
-/** Path to a phase's FAIL record file. */
+/** Path to a phase's FAIL record file (under the data root). */
 export function failRecordPath(phaseId: string): string {
-  return abs(join("records", `PHASE_${phaseId}_FAIL.md`));
+  return dataAbs(join("records", `PHASE_${phaseId}_FAIL.md`));
 }
 
 /* --------------------------------------------------------------------------
- * Minimal JSON Schema validator (draft-07 subset)
- *
- * Deliberately dependency-free so gates never require a network install of a
- * validator. Supports the keywords actually used by our runtime schemas:
- * type, required, properties, additionalProperties:false, enum, const,
- * pattern, minLength, minItems, items.
+ * Minimal JSON Schema validator (draft-07 subset) — dependency-free so gates
+ * and hooks never require a network install of a validator. Supports the
+ * keywords used by our runtime schemas.
  * ------------------------------------------------------------------------ */
 
 type Json = unknown;
@@ -100,7 +117,7 @@ export function validate(schema: Schema, data: Json, path = "$"): string[] {
     const types = Array.isArray(schema.type) ? schema.type : [schema.type];
     if (!types.some((t) => typeMatches(data, t))) {
       errors.push(`${path}: expected type ${types.join("|")}, got ${typeOf(data)}`);
-      return errors; // further checks are meaningless on a type mismatch
+      return errors;
     }
   }
 
@@ -151,7 +168,8 @@ export function validate(schema: Schema, data: Json, path = "$"): string[] {
 }
 
 function loadSchema(name: string): Schema {
-  return JSON.parse(readFileSync(abs(join("schemas", name)), "utf8")) as Schema;
+  // Schemas are code: always loaded from the real source tree.
+  return JSON.parse(readFileSync(srcAbs(join("schemas", name)), "utf8")) as Schema;
 }
 
 /* --------------------------------------------------------------------------
@@ -162,7 +180,7 @@ function loadSchema(name: string): Schema {
 export function contentHash(relFiles: string[]): string {
   const hash = createHash("sha256");
   for (const rel of [...relFiles].sort()) {
-    const bytes = readFileSync(abs(rel));
+    const bytes = readFileSync(dataAbs(rel));
     hash.update(rel);
     hash.update("\0");
     hash.update(String(bytes.length));
@@ -176,20 +194,35 @@ export function contentHash(relFiles: string[]): string {
 /** Best-effort current git commit hash, or null if unavailable. */
 export function gitCommit(): string | null {
   try {
-    return execFileSync("git", ["rev-parse", "HEAD"], {
-      cwd: repoRoot(),
-      stdio: ["ignore", "pipe", "ignore"],
-    })
-      .toString()
-      .trim() || null;
+    return (
+      execFileSync("git", ["rev-parse", "HEAD"], {
+        cwd: sourceRoot(),
+        stdio: ["ignore", "pipe", "ignore"],
+      })
+        .toString()
+        .trim() || null
+    );
   } catch {
     return null;
   }
 }
 
 /* --------------------------------------------------------------------------
- * Record extraction & validation
+ * Record extraction & verification
  * ------------------------------------------------------------------------ */
+
+interface PassPayload {
+  phaseId: string;
+  phaseName: string;
+  status: "PASS";
+  timestamp: string;
+  gateScript: string;
+  gitCommit: string | null;
+  contentHash: string;
+  hashedOutputs: string[];
+  testSummary: string;
+  nextUnlockedPhase: string | null;
+}
 
 /** Extract the first fenced ```json block from a record's markdown. */
 export function extractJsonBlock(markdown: string): Json {
@@ -198,18 +231,119 @@ export function extractJsonBlock(markdown: string): Json {
   return JSON.parse(match[1]);
 }
 
-/** True if a phase holds a structurally valid PASS record on disk. */
-export function hasValidPass(phaseId: string): boolean {
+export interface VerifyResult {
+  ok: boolean;
+  reason: string;
+}
+
+/**
+ * Verify that a phase's PASS record is structurally valid AND current.
+ * Current means: the content hash stored in the record equals a fresh
+ * recomputation over the hashed outputs the record itself lists. A missing,
+ * malformed, schema-invalid, mismatched, or stale record returns ok:false.
+ */
+export function verifyPassCurrent(phaseId: string): VerifyResult {
+  const phase = getPhase(phaseId);
+  if (!phase) return { ok: false, reason: `unknown phase id "${phaseId}"` };
+
   const file = passRecordPath(phaseId);
+  if (!existsSync(file)) return { ok: false, reason: `missing PASS record: ${file}` };
+
+  let payload: Json;
+  try {
+    payload = extractJsonBlock(readFileSync(file, "utf8"));
+  } catch (e) {
+    return { ok: false, reason: `malformed record: ${(e as Error).message}` };
+  }
+
+  const errs = validate(loadSchema("pass-record.schema.json"), payload);
+  if (errs.length) return { ok: false, reason: `schema invalid: ${errs.join("; ")}` };
+
+  const p = payload as PassPayload;
+  if (p.phaseId !== phaseId) {
+    return { ok: false, reason: `phase id mismatch: record "${p.phaseId}" != "${phaseId}"` };
+  }
+  if (p.gateScript !== phase.gate) {
+    return { ok: false, reason: `gate script mismatch: "${p.gateScript}" != "${phase.gate}"` };
+  }
+  if (p.nextUnlockedPhase !== phase.next) {
+    return {
+      ok: false,
+      reason: `next-phase mismatch: "${p.nextUnlockedPhase}" != "${phase.next}"`,
+    };
+  }
+
+  let recomputed: string;
+  try {
+    recomputed = contentHash(p.hashedOutputs);
+  } catch (e) {
+    return { ok: false, reason: `cannot read hashed outputs: ${(e as Error).message}` };
+  }
+  if (recomputed !== p.contentHash) {
+    return {
+      ok: false,
+      reason: `stale: content hash mismatch (record ${p.contentHash}, actual ${recomputed})`,
+    };
+  }
+
+  return { ok: true, reason: "current" };
+}
+
+/** True iff a phase holds a valid, current PASS record. */
+export function hasValidPass(phaseId: string): boolean {
+  return verifyPassCurrent(phaseId).ok;
+}
+
+/** True iff a phase holds a structurally valid FAIL record. */
+export function hasValidFail(phaseId: string): boolean {
+  const file = failRecordPath(phaseId);
   if (!existsSync(file)) return false;
   try {
-    const payload = extractJsonBlock(readFileSync(file, "utf8"));
-    const errors = validate(loadSchema("pass-record.schema.json"), payload);
-    if (errors.length > 0) return false;
-    return (payload as { phaseId?: string }).phaseId === phaseId;
+    const payload = extractJsonBlock(readFileSync(file, "utf8")) as { status?: string; phaseId?: string };
+    if (payload.status !== "FAIL" || payload.phaseId !== phaseId) return false;
+    return validate(loadSchema("fail-record.schema.json"), payload).length === 0;
   } catch {
     return false;
   }
+}
+
+/** A phase may begin iff it has no prior, or its prior holds a valid current PASS. */
+export function canPhaseBegin(phaseId: string): boolean {
+  const prior = priorPhaseOf(phaseId);
+  if (prior === null) return true;
+  return verifyPassCurrent(prior.id).ok;
+}
+
+/** The lowest phase id that lacks a valid current PASS record, or null if all pass. */
+export function activePhaseId(): string | null {
+  for (const p of PHASES) {
+    if (!verifyPassCurrent(p.id).ok) return p.id;
+  }
+  return null;
+}
+
+/**
+ * Stop-guard decision: it is NOT ok to stop while the active phase has a built
+ * gate but no valid current PASS and no valid FAIL record.
+ */
+export function stopCheck(): { block: boolean; reason: string } {
+  const active = activePhaseId();
+  if (active === null) return { block: false, reason: "all phases hold valid current PASS records" };
+
+  const phase = getPhase(active);
+  if (!phase) return { block: false, reason: `no phase definition for "${active}"` };
+
+  const gateBuilt = existsSync(srcAbs(phase.gate));
+  if (gateBuilt && !hasValidFail(active)) {
+    return {
+      block: true,
+      reason:
+        `PHASE ${active} is unresolved: gate ${phase.gate} is built but there is ` +
+        `no valid current PASS and no valid FAIL record. Run the gate to earn a ` +
+        `PASS, or emit a FAIL after the 3-attempt repair budget.`,
+    };
+  }
+  return { block: false, reason: `PHASE ${active} is not yet built, or is resolved via FAIL` };
 }
 
 /* --------------------------------------------------------------------------
@@ -221,9 +355,9 @@ function isoNow(): string {
 }
 
 /**
- * Emit a PASS record for `phase`. Append-only and idempotent: if a valid PASS
- * record already exists it is left untouched. Throws if the generated payload
- * does not validate against pass-record.schema.json.
+ * Emit a PASS record for `phase`. Append-only and idempotent: if a valid,
+ * current PASS record already exists it is left untouched. Throws if the
+ * generated payload does not validate against pass-record.schema.json.
  */
 export function emitPass(args: {
   phase: PhaseDef;
@@ -233,18 +367,19 @@ export function emitPass(args: {
   const { phase, files, testSummary } = args;
   const file = passRecordPath(phase.id);
 
-  if (hasValidPass(phase.id)) {
+  if (verifyPassCurrent(phase.id).ok) {
     return { written: false, path: file };
   }
 
-  const payload = {
+  const payload: PassPayload = {
     phaseId: phase.id,
     phaseName: phase.name,
-    status: "PASS" as const,
+    status: "PASS",
     timestamp: isoNow(),
     gateScript: phase.gate,
     gitCommit: gitCommit(),
     contentHash: contentHash(files),
+    hashedOutputs: files,
     testSummary,
     nextUnlockedPhase: phase.next,
   };
@@ -257,7 +392,8 @@ export function emitPass(args: {
   const md = `# PHASE ${phase.id} — ${phase.name} — PASS
 
 > Emitted by \`${phase.gate}\`. This record is machine-generated and append-only.
-> Do not edit by hand.
+> Do not edit by hand. Validity is determined by structural + content-hash
+> verification (\`gateUtils verify-pass-current ${phase.id}\`), not by existence.
 
 - **Phase:** ${phase.id} — ${phase.name}
 - **Status:** PASS
@@ -370,23 +506,46 @@ function main(argv: string[]): void {
     case "prior-pass":
     case "require-prior": {
       const phase = requirePhase(rest[0]);
+      if (canPhaseBegin(phase.id)) {
+        process.exit(0);
+      }
       const prior = priorPhaseOf(phase.id);
-      if (prior === null) {
-        // PHASE 00 has no prior; the gate is permitted to run.
-        process.exit(0);
-      }
-      if (hasValidPass(prior.id)) {
-        process.exit(0);
-      }
-      die(
-        `prior PASS missing: PHASE ${phase.id} requires a valid records/PHASE_${prior.id}_PASS.md`,
-      );
+      const why = prior ? verifyPassCurrent(prior.id).reason : "no prior";
+      die(`PHASE ${phase.id} blocked — prior PASS not valid/current: ${why}`);
       break;
     }
 
     case "has-pass": {
       const phase = requirePhase(rest[0]);
       process.exit(hasValidPass(phase.id) ? 0 : 1);
+      break;
+    }
+
+    case "verify-pass-current": {
+      const phase = requirePhase(rest[0]);
+      const result = verifyPassCurrent(phase.id);
+      if (result.ok) {
+        process.stdout.write(`PHASE ${phase.id} PASS record is valid and current.\n`);
+        process.exit(0);
+      }
+      die(`PHASE ${phase.id} PASS record not current: ${result.reason}`);
+      break;
+    }
+
+    case "active-phase": {
+      const active = activePhaseId();
+      process.stdout.write((active ?? "none") + "\n");
+      break;
+    }
+
+    case "stop-check": {
+      const result = stopCheck();
+      if (result.block) {
+        process.stderr.write(result.reason + "\n");
+        process.exit(1);
+      }
+      process.stdout.write(result.reason + "\n");
+      process.exit(0);
       break;
     }
 
@@ -399,12 +558,9 @@ function main(argv: string[]): void {
     case "validate-schemas": {
       const names = ["phase.schema.json", "pass-record.schema.json", "fail-record.schema.json"];
       for (const name of names) {
-        const schema = loadSchema(name); // throws if not valid JSON
-        if (!schema.type && !schema.properties) {
-          die(`schema ${name} has neither type nor properties`);
-        }
+        const schema = loadSchema(name);
+        if (!schema.type && !schema.properties) die(`schema ${name} has neither type nor properties`);
       }
-      // Cross-check: every entry in the phase registry validates against phase.schema.json.
       const phaseSchema = loadSchema("phase.schema.json");
       for (const p of PHASES) {
         const errs = validate(phaseSchema, p);
@@ -438,7 +594,7 @@ function main(argv: string[]): void {
       process.stdout.write(
         result.written
           ? `PASS record written: ${result.path}\n`
-          : `PASS record already present (append-only, left untouched): ${result.path}\n`,
+          : `PASS record already valid and current (append-only, left untouched): ${result.path}\n`,
       );
       break;
     }
@@ -459,7 +615,7 @@ function main(argv: string[]): void {
     }
 
     case "list-records": {
-      const dir = abs("records");
+      const dir = dataAbs("records");
       const files = readdirSync(dir).filter((f) => /^PHASE_\d{2}_(PASS|FAIL)\.md$/.test(f));
       process.stdout.write(files.sort().join("\n") + (files.length ? "\n" : ""));
       break;
@@ -467,14 +623,13 @@ function main(argv: string[]): void {
 
     default:
       die(
-        `unknown command "${command ?? ""}". ` +
-          `Expected one of: prior-pass, require-prior, has-pass, hash, ` +
-          `validate-schemas, validate-record, emit-pass, emit-fail, list-records`,
+        `unknown command "${command ?? ""}". Expected one of: require-prior, has-pass, ` +
+          `verify-pass-current, active-phase, stop-check, hash, validate-schemas, ` +
+          `validate-record, emit-pass, emit-fail, list-records`,
       );
   }
 }
 
-// Run as CLI only when invoked directly (not when imported).
 if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url))) {
   main(process.argv.slice(2));
 }
