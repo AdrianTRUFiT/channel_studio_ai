@@ -1,0 +1,288 @@
+{
+  "id": "the-mind-is-a-computer",
+  "name": "The Mind Is a Computer — 20 Faceless Video Ebook Launch",
+  "product": {
+    "title": "The Mind Is a Computer",
+    "type": "ebook",
+    "launchWindow": "2026-Q3"
+  },
+  "brandPillars": [
+    "Cognitive Architecture",
+    "Mental Models",
+    "Attention Engineering",
+    "Memory Systems",
+    "Decision OS"
+  ],
+  "targetVideoCount": 20,
+  "status": "Researching",
+  "createdAt": "2026-06-21T00:00:00Z",
+  "statusModel": [
+    "Not Started",
+    "Researching",
+    "Blueprint Ready",
+    "Script Ready",
+    "Voice Ready",
+    "Visuals Ready",
+    "Render Ready",
+    "Human Review",
+    "Approved",
+    "Publish Ready",
+    "Published",
+    "Blocked"
+  ],
+  "maps": {
+    "posture": "Machine Assisted, Person Supervised",
+    "note": "Human approval is required at decision firewalls. Approval gates are blocking states represented in code and data; they are not engineered around.",
+    "approvalFirewalls": [
+      {
+        "id": "blueprint-approval",
+        "phase": "03",
+        "label": "Human Blueprint Approval",
+        "blocking": true,
+        "state": "Not Reached"
+      },
+      {
+        "id": "inspector-review",
+        "phase": "07",
+        "label": "Inspector / Human Review",
+        "blocking": true,
+        "state": "Not Reached"
+      }
+    ]
+  },
+  "provenance": {
+    "origin": "Concept migrated from the audited local React/Vite prototype (frontend) per GitHub Issue #2. The prototype was a visual product shell, not a completed production system.",
+    "dataSource": "mock",
+    "notReal": [
+      "video rendering",
+      "voiceover synthesis",
+      "visual generation",
+      "YouTube/TikTok publishing",
+      "analytics ingestion",
+      "external APIs"
+    ],
+    "disclaimer": "All pipeline activity in this build is mock/prototype data. No rendering, publishing, analytics, or external APIs are connected. Statuses are illustrative of the governed state model only."
+  },
+  "videos": [
+    {
+      "id": "MIAC-01",
+      "title": "The Mind Is a Computer: The Core Metaphor",
+      "summary": "Why modeling the mind as a computer changes how you debug your thinking.",
+      "authorityPillar": "Cognitive Architecture",
+      "targetDurationSeconds": 60,
+      "status": "Published",
+      "review": { "required": true, "decision": "Approved", "reviewer": "human-reviewer (placeholder)", "note": "Approved at inspector firewall (mock)." },
+      "agentState": { "stage": "Published", "assignedAgent": "publish-agent (mock)", "note": "Publish is mocked; nothing was posted.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-02",
+      "title": "Your Brain's Operating System Explained",
+      "summary": "The 'OS' layer of habits, defaults, and identity that runs underneath thought.",
+      "authorityPillar": "Mental Models",
+      "targetDurationSeconds": 60,
+      "status": "Publish Ready",
+      "review": { "required": true, "decision": "Approved", "reviewer": "human-reviewer (placeholder)", "note": "Cleared for publish queue (mock)." },
+      "agentState": { "stage": "Publish Ready", "assignedAgent": "publish-agent (mock)", "note": "Queued in mock publish lane.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-03",
+      "title": "Working Memory Is Your RAM",
+      "summary": "Why you can only hold a few things at once and how to use that limit.",
+      "authorityPillar": "Memory Systems",
+      "targetDurationSeconds": 60,
+      "status": "Approved",
+      "review": { "required": true, "decision": "Approved", "reviewer": "human-reviewer (placeholder)", "note": "Approved; awaiting publish packaging (mock)." },
+      "agentState": { "stage": "Approved", "assignedAgent": "inspector (human)", "note": "Human approved at review firewall (mock).", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-04",
+      "title": "Long-Term Memory Is Your Hard Drive",
+      "summary": "Encoding, storage, and retrieval — what actually persists and why.",
+      "authorityPillar": "Memory Systems",
+      "targetDurationSeconds": 60,
+      "status": "Human Review",
+      "review": { "required": true, "decision": "Pending", "reviewer": null, "note": "Awaiting human inspector decision (MAPS firewall)." },
+      "agentState": { "stage": "Human Review", "assignedAgent": "inspector (human)", "note": "Blocked on human approval by design.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-05",
+      "title": "Attention Is Your CPU Scheduler",
+      "summary": "How attention allocates scarce processing across competing tasks.",
+      "authorityPillar": "Attention Engineering",
+      "targetDurationSeconds": 60,
+      "status": "Human Review",
+      "review": { "required": true, "decision": "Pending", "reviewer": null, "note": "Awaiting human inspector decision (MAPS firewall)." },
+      "agentState": { "stage": "Human Review", "assignedAgent": "inspector (human)", "note": "Blocked on human approval by design.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-06",
+      "title": "Mental Models Are Cached Functions",
+      "summary": "Reusable thinking shortcuts and when the cache goes stale.",
+      "authorityPillar": "Mental Models",
+      "targetDurationSeconds": 60,
+      "status": "Render Ready",
+      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Has not reached the human review firewall yet." },
+      "agentState": { "stage": "Render Ready", "assignedAgent": "render-agent (mock)", "note": "HTML-to-video render is mocked.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-07",
+      "title": "Habits Are Background Processes",
+      "summary": "How behaviors run automatically and how to kill a bad one.",
+      "authorityPillar": "Decision OS",
+      "targetDurationSeconds": 60,
+      "status": "Visuals Ready",
+      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Has not reached the human review firewall yet." },
+      "agentState": { "stage": "Visuals Ready", "assignedAgent": "visual-agent (mock)", "note": "Visual packaging is mocked.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-08",
+      "title": "Beliefs Are Your Default Config",
+      "summary": "The settings file you inherited and rarely inspect.",
+      "authorityPillar": "Cognitive Architecture",
+      "targetDurationSeconds": 60,
+      "status": "Voice Ready",
+      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Has not reached the human review firewall yet." },
+      "agentState": { "stage": "Voice Ready", "assignedAgent": "voice-agent (mock)", "note": "Voiceover synthesis is mocked.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-09",
+      "title": "Focus: Closing Your Mental Browser Tabs",
+      "summary": "Why open loops drain throughput and how to close them.",
+      "authorityPillar": "Attention Engineering",
+      "targetDurationSeconds": 60,
+      "status": "Voice Ready",
+      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Has not reached the human review firewall yet." },
+      "agentState": { "stage": "Voice Ready", "assignedAgent": "voice-agent (mock)", "note": "Voiceover synthesis is mocked.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-10",
+      "title": "Debugging Negative Thought Loops",
+      "summary": "Treating rumination like an infinite loop you can interrupt.",
+      "authorityPillar": "Decision OS",
+      "targetDurationSeconds": 60,
+      "status": "Script Ready",
+      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Has not reached the human review firewall yet." },
+      "agentState": { "stage": "Script Ready", "assignedAgent": "script-agent (mock)", "note": "Script drafting is mocked.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-11",
+      "title": "Cognitive Load and System Overheating",
+      "summary": "Recognizing thermal throttling in your own focus.",
+      "authorityPillar": "Attention Engineering",
+      "targetDurationSeconds": 60,
+      "status": "Script Ready",
+      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Has not reached the human review firewall yet." },
+      "agentState": { "stage": "Script Ready", "assignedAgent": "script-agent (mock)", "note": "Script drafting is mocked.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-12",
+      "title": "Deep Work Is Single-Threaded Processing",
+      "summary": "Why one heavy thread beats many shallow ones.",
+      "authorityPillar": "Attention Engineering",
+      "targetDurationSeconds": 60,
+      "status": "Blueprint Ready",
+      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Awaiting Phase 03 human blueprint approval firewall." },
+      "agentState": { "stage": "Blueprint Ready", "assignedAgent": "blueprint-agent (mock)", "note": "Blueprint drafting is mocked.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-13",
+      "title": "Context Switching Is Expensive",
+      "summary": "The hidden cost of reloading state between tasks.",
+      "authorityPillar": "Decision OS",
+      "targetDurationSeconds": 60,
+      "status": "Blueprint Ready",
+      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Awaiting Phase 03 human blueprint approval firewall." },
+      "agentState": { "stage": "Blueprint Ready", "assignedAgent": "blueprint-agent (mock)", "note": "Blueprint drafting is mocked.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-14",
+      "title": "Memory Encoding: Writing to Disk",
+      "summary": "How to make a lesson actually persist past tomorrow.",
+      "authorityPillar": "Memory Systems",
+      "targetDurationSeconds": 60,
+      "status": "Researching",
+      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "In discovery; no human gate reached." },
+      "agentState": { "stage": "Researching", "assignedAgent": "intelligence-engine (mock)", "note": "Opportunity discovery is mocked.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-15",
+      "title": "Sleep Is Your Nightly Defragmentation",
+      "summary": "What consolidation does and why all-nighters corrupt files.",
+      "authorityPillar": "Memory Systems",
+      "targetDurationSeconds": 60,
+      "status": "Researching",
+      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "In discovery; no human gate reached." },
+      "agentState": { "stage": "Researching", "assignedAgent": "intelligence-engine (mock)", "note": "Opportunity discovery is mocked.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-16",
+      "title": "Dopamine Is Your Reward API",
+      "summary": "How the reward signal gets hijacked and how to re-aim it.",
+      "authorityPillar": "Decision OS",
+      "targetDurationSeconds": 60,
+      "status": "Researching",
+      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "In discovery; no human gate reached." },
+      "agentState": { "stage": "Researching", "assignedAgent": "intelligence-engine (mock)", "note": "Opportunity discovery is mocked.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-17",
+      "title": "Reframing Is Refactoring Your Code",
+      "summary": "Changing the interpretation without changing the facts.",
+      "authorityPillar": "Mental Models",
+      "targetDurationSeconds": 60,
+      "status": "Not Started",
+      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Not yet entered the production line." },
+      "agentState": { "stage": "Not Started", "assignedAgent": "intake-agent", "note": "Queued at campaign intake.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-18",
+      "title": "Decision Fatigue Is Low Battery",
+      "summary": "Why willpower degrades and how to schedule around it.",
+      "authorityPillar": "Decision OS",
+      "targetDurationSeconds": 60,
+      "status": "Not Started",
+      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Not yet entered the production line." },
+      "agentState": { "stage": "Not Started", "assignedAgent": "intake-agent", "note": "Queued at campaign intake.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-19",
+      "title": "Journaling Is an External Log File",
+      "summary": "Offloading state so working memory can breathe.",
+      "authorityPillar": "Memory Systems",
+      "targetDurationSeconds": 60,
+      "status": "Not Started",
+      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Not yet entered the production line." },
+      "agentState": { "stage": "Not Started", "assignedAgent": "intake-agent", "note": "Queued at campaign intake.", "mock": true },
+      "mock": true
+    },
+    {
+      "id": "MIAC-20",
+      "title": "Upgrading Your Mental Firmware",
+      "summary": "Deep change vs. surface tweaks — and the risk of a bad flash.",
+      "authorityPillar": "Cognitive Architecture",
+      "targetDurationSeconds": 60,
+      "status": "Blocked",
+      "review": { "required": true, "decision": "Rejected", "reviewer": "human-reviewer (placeholder)", "note": "Blocked pending source-claim verification (mock compliance hold)." },
+      "agentState": { "stage": "Blocked", "assignedAgent": "compliance-agent (mock)", "note": "Held by mock compliance check; documented reason required.", "mock": true },
+      "mock": true
+    }
+  ]
+}
