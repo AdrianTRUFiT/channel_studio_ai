@@ -1,0 +1,265 @@
+﻿import { useEffect, useState } from "react";
+import axios from "axios";
+import { BarChart3, Film, Library, Sparkles, Settings } from "lucide-react";
+import "./App.css";
+
+const API = "http://127.0.0.1:4310";
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState("summary");
+  const [state, setState] = useState(null);
+  const [opportunities, setOpportunities] = useState([]);
+  const [jobs, setJobs] = useState([]);
+  const [published, setPublished] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  async function refreshAll() {
+    const [stateRes, oppRes, jobsRes, pubRes] = await Promise.all([
+      axios.get(`${API}/api/state`),
+      axios.get(`${API}/api/opportunities`),
+      axios.get(`${API}/api/production-jobs`),
+      axios.get(`${API}/api/published-videos`)
+    ]);
+
+    setState(stateRes.data);
+    setOpportunities(oppRes.data);
+    setJobs(jobsRes.data);
+    setPublished(pubRes.data);
+  }
+
+  useEffect(() => {
+    refreshAll();
+  }, []);
+
+  async function createJob(opportunityId) {
+    setLoading(true);
+    try {
+      await axios.post(`${API}/api/production-jobs`, { opportunityId });
+      await refreshAll();
+      setActiveTab("production");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function advanceJob(jobId) {
+    setLoading(true);
+    try {
+      await axios.post(`${API}/api/production-jobs/${jobId}/progress`, { progress: 100 });
+      await refreshAll();
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function verifyJob(jobId) {
+    setLoading(true);
+    try {
+      await axios.post(`${API}/api/production-jobs/${jobId}/dave-verify`);
+      await refreshAll();
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function publishJob(jobId) {
+    setLoading(true);
+    try {
+      await axios.post(`${API}/api/publish/${jobId}`);
+      await refreshAll();
+      setActiveTab("inventory");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const totalRevenue = published.reduce((sum, item) => sum + Number(item.revenue || 0), 0);
+
+  const nav = [
+    ["summary", "Summary", BarChart3],
+    ["opportunities", "Opportunities", Sparkles],
+    ["production", "Production", Film],
+    ["inventory", "Published Inventory", Library],
+    ["settings", "Settings", Settings]
+  ];
+
+  return (
+    <div className="app-shell">
+      <aside className="sidebar">
+        <div className="brand-block">
+          <div className="brand-mark">CSA</div>
+          <div>
+            <h1>Channel Studio AI</h1>
+            <p>Revenue Workflow Engine</p>
+          </div>
+        </div>
+
+        <nav className="nav-list">
+          {nav.map(([id, label, Icon]) => (
+            <button
+              key={id}
+              className={activeTab === id ? "nav-item active" : "nav-item"}
+              onClick={() => setActiveTab(id)}
+            >
+              <Icon size={18} />
+              <span>{label}</span>
+            </button>
+          ))}
+        </nav>
+
+        <div className="side-card">
+          <p className="eyebrow">Backend</p>
+          <strong>{state ? "Connected" : "Loading..."}</strong>
+          <span>http://127.0.0.1:4310</span>
+        </div>
+      </aside>
+
+      <main className="main-panel">
+        <header className="topbar">
+          <div>
+            <p className="eyebrow">Canonical Build</p>
+            <h2>{titleFor(activeTab)}</h2>
+          </div>
+          <button className="secondary" onClick={refreshAll} disabled={loading}>
+            Refresh
+          </button>
+        </header>
+
+        {activeTab === "summary" && (
+          <section className="grid">
+            <MetricCard label="Opportunities" value={state?.opportunities ?? "-"} note="Identified leads" />
+            <MetricCard label="Production" value={state?.production_jobs ?? "-"} note="Active jobs" />
+            <MetricCard label="Published" value={state?.published_videos ?? "-"} note="Live inventory" />
+            <MetricCard label="Revenue" value={`$${totalRevenue.toLocaleString()}`} note="Mock telemetry" />
+
+            <div className="wide-card">
+              <h3>Workflow</h3>
+              <p>Find → Build → Review → DAVE Verify → Publish → Measure → Learn</p>
+              <div className="log-list">
+                {(state?.latest_logs || []).map((log) => (
+                  <div key={log.id} className="log-item">{log.message}</div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activeTab === "opportunities" && (
+          <section className="card-list">
+            {opportunities.map((op) => (
+              <article key={op.id} className="record-card">
+                <div className="record-head">
+                  <span className="score">{op.score}%</span>
+                  <span className={`status ${op.status}`}>{op.status}</span>
+                </div>
+                <h3>{op.title}</h3>
+                <p>{op.reason_selected}</p>
+                <div className="record-meta">
+                  <span>{op.category}</span>
+                  <span>{op.search_volume}</span>
+                  <span>${Number(op.projected_revenue).toLocaleString()}</span>
+                </div>
+                <button
+                  className="primary"
+                  onClick={() => createJob(op.id)}
+                  disabled={loading || op.status === "in_production"}
+                >
+                  {op.status === "in_production" ? "Already In Production" : "Initialize Production"}
+                </button>
+              </article>
+            ))}
+          </section>
+        )}
+
+        {activeTab === "production" && (
+          <section className="card-list">
+            {jobs.length === 0 && <Empty text="No production jobs yet." />}
+            {jobs.map((job) => (
+              <article key={job.id} className="record-card">
+                <div className="record-head">
+                  <span className="score">{job.progress}%</span>
+                  <span className={`status ${job.status}`}>{job.status}</span>
+                </div>
+                <h3>{job.title}</h3>
+                <p>Assigned channel: {job.assigned_channel}</p>
+                <div className="check-row">
+                  <span className={job.script_ready ? "done" : ""}>Script</span>
+                  <span className={job.voiceover_ready ? "done" : ""}>Voice</span>
+                  <span className={job.thumbnail_ready ? "done" : ""}>Thumbnail</span>
+                  <span className={job.video_ready ? "done" : ""}>Video</span>
+                  <span className={job.dave_verified ? "done" : ""}>DAVE</span>
+                </div>
+                <div className="button-row">
+                  <button className="secondary" onClick={() => advanceJob(job.id)} disabled={loading || job.video_ready}>
+                    Complete Build
+                  </button>
+                  <button className="secondary" onClick={() => verifyJob(job.id)} disabled={loading || !job.video_ready || job.dave_verified}>
+                    DAVE Verify
+                  </button>
+                  <button className="primary" onClick={() => publishJob(job.id)} disabled={loading || !job.video_ready || !job.dave_verified || job.published}>
+                    Publish
+                  </button>
+                </div>
+              </article>
+            ))}
+          </section>
+        )}
+
+        {activeTab === "inventory" && (
+          <section className="card-list">
+            {published.length === 0 && <Empty text="No published videos yet." />}
+            {published.map((video) => (
+              <article key={video.id} className="record-card">
+                <div className="record-head">
+                  <span className="score">${Number(video.revenue || 0).toLocaleString()}</span>
+                  <span className="status published">published</span>
+                </div>
+                <h3>{video.title}</h3>
+                <p>{video.performance_insight}</p>
+                <div className="record-meta">
+                  <span>{video.channel}</span>
+                  <span>{video.views} views</span>
+                  <span>{video.ctr}% CTR</span>
+                  <span>{video.watch_time} watch</span>
+                </div>
+              </article>
+            ))}
+          </section>
+        )}
+
+        {activeTab === "settings" && (
+          <section className="wide-card">
+            <h3>Settings & Criteria</h3>
+            <p>This screen will control opportunity thresholds, allowed categories, auto-production, auto-publishing, and human approval gates.</p>
+            <pre>{JSON.stringify(state?.settings || {}, null, 2)}</pre>
+          </section>
+        )}
+      </main>
+    </div>
+  );
+}
+
+function MetricCard({ label, value, note }) {
+  return (
+    <div className="metric-card">
+      <p className="eyebrow">{label}</p>
+      <strong>{value}</strong>
+      <span>{note}</span>
+    </div>
+  );
+}
+
+function Empty({ text }) {
+  return <div className="empty">{text}</div>;
+}
+
+function titleFor(tab) {
+  const titles = {
+    summary: "Executive Summary",
+    opportunities: "Opportunity Pool",
+    production: "Production Queue",
+    inventory: "Published Inventory",
+    settings: "Settings & Criteria"
+  };
+  return titles[tab] || "Channel Studio AI";
+}
