@@ -7,13 +7,20 @@
   "engines": {
     "node": ">=22.6.0"
   },
+  "workspaces": [
+    "web"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit",
     "test": "node --test",
     "orchestrate": "node orchestrator/runner.ts",
     "status": "node orchestrator/runner.ts status",
-    "gate:00": "bash gates/check_phase_00.sh"
+    "dev": "npm run dev --workspace web",
+    "build:web": "npm run build --workspace web",
+    "preview": "npm run preview --workspace web",
+    "gate:00": "bash gates/check_phase_00.sh",
+    "gate:01": "bash gates/check_phase_01.sh"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

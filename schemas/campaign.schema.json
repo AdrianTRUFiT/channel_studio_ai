@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "channel-studio-ai/schemas/campaign.schema.json",
+  "title": "Campaign",
+  "description": "A faceless-video campaign and its state model. Phase 01 campaigns are mock/prototype shells.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "product",
+    "brandPillars",
+    "targetVideoCount",
+    "status",
+    "createdAt",
+    "statusModel",
+    "videos",
+    "maps",
+    "provenance"
+  ],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "product": {
+      "type": "object",
+      "required": ["title", "type"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "minLength": 1 },
+        "launchWindow": { "type": "string" }
+      }
+    },
+    "brandPillars": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "targetVideoCount": { "type": "integer" },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Not Started",
+        "Researching",
+        "Blueprint Ready",
+        "Script Ready",
+        "Voice Ready",
+        "Visuals Ready",
+        "Render Ready",
+        "Human Review",
+        "Approved",
+        "Publish Ready",
+        "Published",
+        "Blocked"
+      ]
+    },
+    "createdAt": { "type": "string", "minLength": 1 },
+    "statusModel": {
+      "type": "array",
+      "minItems": 12,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "videos": {
+      "type": "array",
+      "minItems": 20,
+      "items": { "type": "object" }
+    },
+    "maps": {
+      "type": "object",
+      "required": ["posture", "approvalFirewalls", "note"],
+      "properties": {
+        "posture": { "type": "string", "minLength": 1 },
+        "approvalFirewalls": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "phase", "label", "blocking", "state"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "phase": { "type": "string", "pattern": "^[0-9]{2}$" },
+              "label": { "type": "string", "minLength": 1 },
+              "blocking": { "type": "boolean" },
+              "state": {
+                "type": "string",
+                "enum": ["Pending", "Approved", "Rejected", "Not Reached"]
+              }
+            }
+          }
+        },
+        "note": { "type": "string", "minLength": 1 }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["origin", "dataSource", "notReal", "disclaimer"],
+      "properties": {
+        "origin": { "type": "string", "minLength": 1 },
+        "dataSource": { "type": "string", "enum": ["mock", "live"] },
+        "notReal": { "type": "array", "items": { "type": "string" } },
+        "disclaimer": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

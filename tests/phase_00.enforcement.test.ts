@@ -11,7 +11,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -22,7 +22,17 @@ import {
   emitPass,
   passRecordPath,
 } from "../gates/shared/gateUtils.ts";
-import { getPhase } from "../src/phases.ts";
+import { getPhase, PHASES } from "../src/phases.ts";
+
+/** Phase ids whose gate script is actually built in the source tree (in order). */
+function builtGatePhaseIds(): string[] {
+  const out: string[] = [];
+  for (const p of PHASES) {
+    if (existsSync(join(sourceRoot(), p.gate))) out.push(p.id);
+    else break; // gates are built contiguously from 00; stop at the first gap
+  }
+  return out;
+}
 
 /** Run `fn` with CSAI_ROOT pointed at a fresh temp dir; always clean up. */
 function withFixtureRoot(fn: (root: string) => void): void {
@@ -39,15 +49,21 @@ function withFixtureRoot(fn: (root: string) => void): void {
   }
 }
 
-/** Write a valid, current PHASE 00 PASS record into the fixture root. */
-function seedValidPhase00(root: string): void {
-  writeFileSync(join(root, "foundation.txt"), "deterministic foundation\n");
+/** Write a valid, current PASS record for `phaseId` into the fixture root. */
+function seedValidPass(root: string, phaseId: string): void {
+  const fname = `seed-${phaseId}.txt`;
+  writeFileSync(join(root, fname), `deterministic seed for phase ${phaseId}\n`);
   const result = emitPass({
-    phase: getPhase("00")!,
-    files: ["foundation.txt"],
+    phase: getPhase(phaseId)!,
+    files: [fname],
     testSummary: "fixture seed",
   });
   assert.equal(result.written, true);
+}
+
+/** Write a valid, current PHASE 00 PASS record into the fixture root. */
+function seedValidPhase00(root: string): void {
+  seedValidPass(root, "00");
 }
 
 test("1. Phase 01 is blocked when Phase 00 PASS is missing", () => {
@@ -71,7 +87,7 @@ test("2b. A stale (tampered) Phase 00 PASS record does not unlock Phase 01", () 
     seedValidPhase00(root);
     assert.equal(verifyPassCurrent("00").ok, true);
     // Tamper a hashed output AFTER the record was emitted → content hash drifts.
-    writeFileSync(join(root, "foundation.txt"), "tampered\n");
+    writeFileSync(join(root, "seed-00.txt"), "tampered\n");
     const result = verifyPassCurrent("00");
     assert.equal(result.ok, false);
     assert.match(result.reason, /stale|hash mismatch/);
@@ -155,8 +171,9 @@ test("4. stop_guard.sh blocks stopping when active phase has a built gate but no
 
 test("4b. stop_guard.sh allows stopping when the active phase has no built gate", () => {
   withFixtureRoot((root) => {
-    // Valid PHASE 00 PASS → active phase is 01, whose gate is NOT built → allow stop.
-    seedValidPhase00(root);
+    // Seed valid PASS records for every phase whose gate is built in the source
+    // tree, so the active phase is the first one WITHOUT a built gate → allow stop.
+    for (const id of builtGatePhaseIds()) seedValidPass(root, id);
     const hook = join(sourceRoot(), "hooks", "stop_guard.sh");
     execFileSync("bash", [hook], {
       input: "{}",

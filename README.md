@@ -84,6 +84,34 @@ node orchestrator/runner.ts run 00     # run a single phase's gate
 node orchestrator/runner.ts run all    # run gates in order, halt on first failure
 ```
 
+## Dashboard (Phase 01)
+
+Phase 01 adds the first visible product face: a governed **dashboard shell** in
+the `web/` npm workspace (React + Vite), inspired by the audited local prototype
+(GitHub Issue #2). It renders the same governed campaign file the gate
+validates — a single source of truth — and **loudly labels everything mock**.
+
+```bash
+npm install     # installs root devDeps + the web/ workspace (react, vite)
+npm run dev      # launches the dashboard at http://localhost:5173
+```
+
+The dashboard shows the Channel Studio AI masthead, the MAPⓈ posture banner, a
+prototype/mock disclaimer, campaign intake, pipeline status cards driven by the
+governed 12-stage state model, and a Production Floor table of the 20-video
+sample campaign for *The Mind Is a Computer*. No rendering, publishing,
+analytics, or external APIs are connected — those are deferred to later phases.
+
+The campaign state model is governed under `src/campaign/` and validated by
+`schemas/campaign.schema.json`, `schemas/video-asset.schema.json`, and
+`schemas/agent-state.schema.json`. The sample campaign lives at
+`data/campaigns/the-mind-is-a-computer.campaign.json` and must contain exactly
+20 video records; `gates/check_phase_01.sh` enforces this.
+
+> Note: adding the `web/` workspace changed the root `package.json`, which is a
+> Phase 00 hashed output. The Phase 00 gate was re-run so its PASS record stays
+> current — proof currency working as designed, not bypassed.
+
 ## The append-only record rule
 
 - PASS records are **never** written by hand — only by gate scripts via
@@ -161,6 +189,8 @@ returns the stderr message to Claude.
 
 ## Status
 
-PHASE 00 (Runtime Foundation) is the entry point. Run `npm run gate:00`; on
-success it emits `records/PHASE_00_PASS.md`, which unlocks PHASE 01. Subsequent
-phases are built one at a time, each gated by its predecessor's PASS record.
+PHASE 00 (Runtime Foundation) and PHASE 01 (Campaign Intake & State Model) hold
+valid, current PASS records. Run `npm run gate:00` and `npm run gate:01` to
+re-verify; `npm run status` shows the whole line. PHASE 02 remains locked until
+its gate is built and PHASE 01's PASS record validates. Subsequent phases are
+built one at a time, each gated by its predecessor's PASS record.
