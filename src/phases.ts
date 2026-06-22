@@ -22,7 +22,7 @@ export const PHASES: readonly PhaseDef[] = [
   { id: "00", name: "Runtime Foundation", gate: "gates/check_phase_00.sh", next: "01" },
   { id: "01", name: "Campaign Intake and State Model", gate: "gates/check_phase_01.sh", next: "02" },
   { id: "02", name: "Local Video Production Engine", gate: "gates/check_phase_02.sh", next: "03" },
-  { id: "03", name: "Human Blueprint Approval Gate", gate: "gates/check_phase_03.sh", next: "04" },
+  { id: "03", name: "External Creative Production Adapter", gate: "gates/check_phase_03.sh", next: "04" },
   { id: "04", name: "Strategic Blueprinting and Script Production", gate: "gates/check_phase_04.sh", next: "05" },
   { id: "05", name: "Voice, Visual, and Asset Packaging", gate: "gates/check_phase_05.sh", next: "06" },
   { id: "06", name: "HTML-to-Video Render Engine", gate: "gates/check_phase_06.sh", next: "07" },

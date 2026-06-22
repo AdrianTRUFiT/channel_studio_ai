@@ -11,3 +11,7 @@ outputs/videos/*
 !outputs/videos/.gitkeep
 outputs/manifests/*
 !outputs/manifests/.gitkeep
+
+# Phase 03 external-production packages (generated, never committed)
+outputs/production/*
+!outputs/production/.gitkeep
