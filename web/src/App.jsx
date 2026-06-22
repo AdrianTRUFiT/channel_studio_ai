@@ -5,10 +5,12 @@ import MapsBanner from "./components/MapsBanner.jsx";
 import CampaignOverview from "./components/CampaignOverview.jsx";
 import PipelineStatusCards from "./components/PipelineStatusCards.jsx";
 import ProductionFloor from "./components/ProductionFloor.jsx";
+import RenderStatus from "./components/RenderStatus.jsx";
 
 const TABS = [
   { id: "dashboard", label: "Dashboard" },
   { id: "floor", label: "Production Floor" },
+  { id: "render", label: "Video Production" },
   { id: "intake", label: "Campaign Intake" },
 ];
 
@@ -44,6 +46,8 @@ export default function App() {
       )}
 
       {tab === "floor" && <ProductionFloor campaign={campaign} />}
+
+      {tab === "render" && <RenderStatus />}
 
       {tab === "intake" && (
         <>

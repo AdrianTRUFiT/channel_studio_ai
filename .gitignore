@@ -5,3 +5,9 @@ node_modules/
 *.tsbuildinfo
 dist/
 web/dist/
+
+# Phase 02 local render artifacts (generated, never committed)
+outputs/videos/*
+!outputs/videos/.gitkeep
+outputs/manifests/*
+!outputs/manifests/.gitkeep

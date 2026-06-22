@@ -19,11 +19,15 @@
     "dev": "npm run dev --workspace web",
     "build:web": "npm run build --workspace web",
     "preview": "npm run preview --workspace web",
+    "produce:videos": "node scripts/produce_videos.ts",
+    "produce:videos:smoke": "node scripts/produce_videos.ts --smoke",
     "gate:00": "bash gates/check_phase_00.sh",
-    "gate:01": "bash gates/check_phase_01.sh"
+    "gate:01": "bash gates/check_phase_01.sh",
+    "gate:02": "bash gates/check_phase_02.sh"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
+    "ffmpeg-static": "^5.2.0",
     "typescript": "^5.7.2"
   }
 }

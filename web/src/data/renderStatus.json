@@ -1,0 +1,47 @@
+{
+  "rendererMode": "local-mock-render",
+  "published": false,
+  "label": "Local mock render — not published",
+  "command": "npm run produce:videos",
+  "smokeCommand": "npm run produce:videos -- --smoke",
+  "outputDir": "outputs/videos",
+  "manifestDir": "outputs/manifests",
+  "targetVideoCount": 20,
+  "note": "Produced MP4s and manifests are local-only and git-ignored. Run the command above to generate them; the panel below reflects the most recent local run.",
+  "lastRun": {
+    "mode": "full",
+    "rendererMode": "local-mock-render",
+    "producedCount": 20,
+    "renderedCount": 20,
+    "manifestFile": "outputs/manifests/manifest-the-mind-is-a-computer-full.json",
+    "videoFiles": [
+      "outputs/videos/tmiac-001.mp4",
+      "outputs/videos/tmiac-002.mp4",
+      "outputs/videos/tmiac-003.mp4",
+      "outputs/videos/tmiac-004.mp4",
+      "outputs/videos/tmiac-005.mp4",
+      "outputs/videos/tmiac-006.mp4",
+      "outputs/videos/tmiac-007.mp4",
+      "outputs/videos/tmiac-008.mp4",
+      "outputs/videos/tmiac-009.mp4",
+      "outputs/videos/tmiac-010.mp4",
+      "outputs/videos/tmiac-011.mp4",
+      "outputs/videos/tmiac-012.mp4",
+      "outputs/videos/tmiac-013.mp4",
+      "outputs/videos/tmiac-014.mp4",
+      "outputs/videos/tmiac-015.mp4",
+      "outputs/videos/tmiac-016.mp4",
+      "outputs/videos/tmiac-017.mp4",
+      "outputs/videos/tmiac-018.mp4",
+      "outputs/videos/tmiac-019.mp4",
+      "outputs/videos/tmiac-020.mp4"
+    ],
+    "ffmpeg": {
+      "available": true,
+      "source": "ffmpeg-static",
+      "version": "ffmpeg version 7.0.2-static https://johnvansickle.com/ffmpeg/  Copyright (c) 2000-2024 the FFmpeg developers"
+    },
+    "published": false,
+    "generatedAt": "2026-06-22T00:14:41.531Z"
+  }
+}
