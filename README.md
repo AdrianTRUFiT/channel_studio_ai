@@ -112,6 +112,42 @@ The campaign state model is governed under `src/campaign/` and validated by
 > Phase 00 hashed output. The Phase 00 gate was re-run so its PASS record stays
 > current — proof currency working as designed, not bypassed.
 
+## Local video production (Phase 02)
+
+Phase 02 makes the machine produce **actual local MP4 files** from the governed
+20-video campaign — local rendering only, no external APIs, nothing published.
+
+```bash
+npm run produce:videos            # full: all 20 videos → outputs/videos/tmiac-001.mp4 …
+npm run produce:videos -- --smoke # fast smoke sample (the gate uses this)
+```
+
+Pipeline (per video): campaign record → `renderPlan` (title / hook / point / CTA
+/ disclaimer scenes) → PNG scene frames drawn in pure Node (`src/render/frameCanvas.ts`,
+a hand-rolled 5×7 bitmap font + PNG encoder, zero native deps) → **ffmpeg**
+encodes the frames into an H.264 MP4 with a **silent placeholder audio track**.
+
+- **ffmpeg is local only.** It is resolved from `$CSAI_FFMPEG`/`$FFMPEG_PATH`,
+  then the vendored `ffmpeg-static` npm binary, then a system `ffmpeg`. No
+  network call, no API. If no ffmpeg is usable, production is **not faked** — each
+  video is marked `blocked-no-ffmpeg`, a storyboard frame is written, and the
+  blocker is reported.
+- **`rendererMode: local-mock-render`** is honest: generated slides + silent
+  audio. There is no real narration or AI video, and nothing is published
+  (`published: false`).
+- Outputs (`outputs/videos/*.mp4`, `outputs/manifests/*.json`) are **local-only
+  and git-ignored**. Each run writes a manifest with one record per video,
+  including a `sha256:` file hash, validated against
+  `schemas/render-manifest.schema.json`.
+- The dashboard's **Video Production** tab shows render status, produced count,
+  output directory, the last manifest, and a loud "local mock render — not
+  published" label (`web/src/data/renderStatus.json`, updated by the producer).
+
+`gates/check_phase_02.sh` verifies Phase 01 is current, typechecks, tests, runs a
+**smoke** production (distinct from full), confirms ≥1 MP4 + a valid manifest +
+matching file hashes, emits `records/PHASE_02_PASS.md`, verifies it, and confirms
+**Phase 03 remains locked**.
+
 ## The append-only record rule
 
 - PASS records are **never** written by hand — only by gate scripts via

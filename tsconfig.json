@@ -20,6 +20,7 @@
     "src/**/*.ts",
     "orchestrator/**/*.ts",
     "gates/**/*.ts",
+    "scripts/**/*.ts",
     "tests/**/*.ts",
     "agents/**/*.ts",
     "workflows/**/*.ts",
