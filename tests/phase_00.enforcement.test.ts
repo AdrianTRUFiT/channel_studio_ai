@@ -24,6 +24,43 @@ import {
 } from "../gates/shared/gateUtils.ts";
 import { getPhase, PHASES } from "../src/phases.ts";
 
+/**
+ * Whether a POSIX bash is usable. The guard hooks are shell scripts; on a host
+ * without bash these integration tests are skipped (not failed) — the
+ * governance LOGIC is already covered by the in-process tests above.
+ */
+function bashAvailable(): boolean {
+  try {
+    execFileSync("bash", ["-c", "exit 0"], { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+const HAS_BASH = bashAvailable();
+
+/**
+ * Invoke a guard hook exactly the way Claude Code does: `bash <relative-posix-path>`
+ * with cwd at the repo root. Using a RELATIVE, forward-slash path (never an
+ * absolute Windows path) keeps the hook's `${BASH_SOURCE[0]}` clean so its
+ * dirname/pwd resolve correctly under both Linux and Git Bash — avoiding the
+ * backslash path mangling that breaks `bash C:\...\hook.sh` on Windows.
+ */
+function runHook(relPosixPath: string, input: string, root: string): { status: number; stderr: string } {
+  try {
+    execFileSync("bash", [relPosixPath], {
+      cwd: sourceRoot(),
+      input,
+      env: { ...process.env, CSAI_ROOT: root },
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+    return { status: 0, stderr: "" };
+  } catch (e) {
+    const err = e as { status?: number; stderr?: Buffer };
+    return { status: err.status ?? -1, stderr: err.stderr?.toString() ?? "" };
+  }
+}
+
 /** Phase ids whose gate script is actually built in the source tree (in order). */
 function builtGatePhaseIds(): string[] {
   const out: string[] = [];
@@ -107,78 +144,51 @@ test("5. A valid PASS record unlocks only the next phase, not arbitrary later ph
   });
 });
 
-test("3. pre_phase_guard.sh blocks work on Phase 02 when only Phase 00 PASS exists", () => {
+test("3. pre_phase_guard.sh blocks work on Phase 02 when only Phase 00 PASS exists", (t) => {
+  if (!HAS_BASH) return t.skip("requires POSIX bash (guard hook is a shell script)");
   withFixtureRoot((root) => {
     seedValidPhase00(root);
-    const hook = join(sourceRoot(), "hooks", "pre_phase_guard.sh");
-    const input = JSON.stringify({ tool_input: { file_path: "gates/check_phase_02.sh" } });
-
-    let status = 0;
-    let stderr = "";
-    try {
-      execFileSync("bash", [hook], {
-        input,
-        env: { ...process.env, CSAI_ROOT: root },
-        stdio: ["pipe", "pipe", "pipe"],
-      });
-    } catch (e) {
-      const err = e as { status?: number; stderr?: Buffer };
-      status = err.status ?? -1;
-      stderr = err.stderr?.toString() ?? "";
-    }
+    const { status, stderr } = runHook(
+      "hooks/pre_phase_guard.sh",
+      JSON.stringify({ tool_input: { file_path: "gates/check_phase_02.sh" } }),
+      root,
+    );
     assert.equal(status, 2, "guard must exit 2 to block");
     assert.match(stderr, /BLOCKED by pre_phase_guard/);
   });
 });
 
-test("3b. pre_phase_guard.sh allows Phase 01 work once Phase 00 PASS is valid", () => {
+test("3b. pre_phase_guard.sh allows Phase 01 work once Phase 00 PASS is valid", (t) => {
+  if (!HAS_BASH) return t.skip("requires POSIX bash (guard hook is a shell script)");
   withFixtureRoot((root) => {
     seedValidPhase00(root);
-    const hook = join(sourceRoot(), "hooks", "pre_phase_guard.sh");
-    const input = JSON.stringify({ tool_input: { file_path: "phases/PHASE_01.md" } });
-    // Should NOT throw (exit 0).
-    execFileSync("bash", [hook], {
-      input,
-      env: { ...process.env, CSAI_ROOT: root },
-      stdio: ["pipe", "pipe", "pipe"],
-    });
+    const { status } = runHook(
+      "hooks/pre_phase_guard.sh",
+      JSON.stringify({ tool_input: { file_path: "phases/PHASE_01.md" } }),
+      root,
+    );
+    assert.equal(status, 0, "guard must allow (exit 0)");
   });
 });
 
-test("4. stop_guard.sh blocks stopping when active phase has a built gate but no valid PASS/FAIL", () => {
+test("4. stop_guard.sh blocks stopping when active phase has a built gate but no valid PASS/FAIL", (t) => {
+  if (!HAS_BASH) return t.skip("requires POSIX bash (guard hook is a shell script)");
   withFixtureRoot((root) => {
     // Empty records → active phase is 00, whose gate IS built in the source tree,
     // and there is no valid PASS and no valid FAIL → stopping must be blocked.
-    const hook = join(sourceRoot(), "hooks", "stop_guard.sh");
-
-    let status = 0;
-    let stderr = "";
-    try {
-      execFileSync("bash", [hook], {
-        input: "{}",
-        env: { ...process.env, CSAI_ROOT: root },
-        stdio: ["pipe", "pipe", "pipe"],
-      });
-    } catch (e) {
-      const err = e as { status?: number; stderr?: Buffer };
-      status = err.status ?? -1;
-      stderr = err.stderr?.toString() ?? "";
-    }
+    const { status, stderr } = runHook("hooks/stop_guard.sh", "{}", root);
     assert.equal(status, 2, "stop guard must exit 2 to block");
     assert.match(stderr, /BLOCKED by stop_guard/);
   });
 });
 
-test("4b. stop_guard.sh allows stopping when the active phase has no built gate", () => {
+test("4b. stop_guard.sh allows stopping when the active phase has no built gate", (t) => {
+  if (!HAS_BASH) return t.skip("requires POSIX bash (guard hook is a shell script)");
   withFixtureRoot((root) => {
     // Seed valid PASS records for every phase whose gate is built in the source
     // tree, so the active phase is the first one WITHOUT a built gate → allow stop.
     for (const id of builtGatePhaseIds()) seedValidPass(root, id);
-    const hook = join(sourceRoot(), "hooks", "stop_guard.sh");
-    execFileSync("bash", [hook], {
-      input: "{}",
-      env: { ...process.env, CSAI_ROOT: root },
-      stdio: ["pipe", "pipe", "pipe"],
-    });
+    const { status } = runHook("hooks/stop_guard.sh", "{}", root);
+    assert.equal(status, 0, "stop guard must allow (exit 0)");
   });
 });

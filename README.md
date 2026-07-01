@@ -112,6 +112,42 @@ The campaign state model is governed under `src/campaign/` and validated by
 > Phase 00 hashed output. The Phase 00 gate was re-run so its PASS record stays
 > current — proof currency working as designed, not bypassed.
 
+## Campaign intake (operator)
+
+The deterministic **Campaign Intake Engine** turns an operator topic into a
+governed, schema-valid campaign — no UI required; CLI, desktop, and web
+front-ends all call the same core (`src/intake/campaignIntake.ts`).
+
+```bash
+npm run intake -- --topic "Sleep Optimization for Founders"                # 20 videos (default)
+npm run intake -- --topic "Chess Openings" --count 10 --mode smoke         # custom count/mode
+```
+
+Outputs: `data/campaigns/<slug>.campaign.json` (governed campaign, validated
+against the campaign/video/agent-state schemas before writing) and an intake
+run manifest at `outputs/intake/<slug>.intake.json` (git-ignored) with a
+checksum, the video ids, and the exact downstream commands. Video ids get a
+deterministic topic acronym (e.g. `SOF-01`), so render outputs never collide
+with the sample campaign's `tmiac-*` files. All generated copy is
+template-derived and labelled mock; intake queries no external source.
+
+Generated campaigns flow straight into the existing pipeline:
+
+```bash
+npm run build:production -- --campaign data/campaigns/<slug>.campaign.json --video SOF-01
+npm run produce:videos  -- --campaign data/campaigns/<slug>.campaign.json
+```
+
+Each campaign self-declares `targetVideoCount` and must match it exactly; the
+sample campaign's 20-video contract is unchanged and still enforced by
+`gates/check_phase_01.sh`.
+
+> Offline installs: `ffmpeg-static` is an **optional** dependency — if its
+> binary download is blocked, `npm install` still succeeds and the renderer
+> falls back to `$CSAI_FFMPEG` or a system `ffmpeg` (or honestly reports
+> `blocked-no-ffmpeg`). Set `CSAI_FFMPEG=/path/to/ffmpeg` to certify gates on
+> machines without the vendored binary.
+
 ## Local video production (Phase 02)
 
 Phase 02 makes the machine produce **actual local MP4 files** from the governed
@@ -147,6 +183,45 @@ encodes the frames into an H.264 MP4 with a **silent placeholder audio track**.
 **smoke** production (distinct from full), confirms ≥1 MP4 + a valid manifest +
 matching file hashes, emits `records/PHASE_02_PASS.md`, verifies it, and confirms
 **Phase 03 remains locked**.
+
+## External creative production adapter (Phase 03)
+
+Phase 03 is the **real production lane**: it converts one governed campaign video
+record into a complete, polished-PRODUCTION package for external tools — while
+the Phase 02 local renderer stays as the **fallback/proof lane**.
+
+```bash
+npm run build:production                 # builds the package for MIAC-01
+npm run build:production -- --video MIAC-03
+```
+
+The package (written to `outputs/production/<videoId>/`, git-ignored) is the
+complete 9-part governed production contract: **research brief** (offline,
+mock-scored), **narrative blueprint** (packaging + retention design), script
+package + `SCRIPT.md`, scene-by-scene storyboard, visual prompt pack, voiceover
+script (SSML), animation direction, **four adapter payloads** (HeyGen,
+Higgsfield, Canva, Voiceover) with a render-request package, a `REVIEW.md`
+human review gate, and a **publish package** (title/description/hashtags/
+thumbnail direction, `visibility: private`, AI disclosure, `autoPostAllowed:
+false` pending human approval) — plus a `package.json` manifest with checksums.
+
+**Contracts first, no live calls.** Each external tool is an
+[`AdapterContract`](src/adapters/adapterContract.ts) + an **offline** payload
+builder. Phase 03 calls **no** vendor API: every payload is a `dryRun`,
+`published:false`, `LIVE-INTEGRATION-BLOCKED` artifact. Going live requires both
+(a) provisioned credentials and (b) explicit paid-API approval — and it still
+passes through the blocking **MAPS human review gate** (`decision: Pending`).
+The local renderer (`local-mock-render`) is the declared fallback for every lane.
+
+`gates/check_phase_03.sh` verifies Phase 02 is current, typechecks, tests,
+validates the four adapter **contracts** (all blocked), builds the package for
+**one** video, validates the manifest + all four payloads, asserts the review
+gate is Pending/blocking and nothing is published, emits
+`records/PHASE_03_PASS.md`, verifies it, and confirms **Phase 04 stays locked**.
+
+> Future review: live connectors (HeyGen/Higgsfield/Canva/TTS) are deferred
+> until a single controlled, approved connector test. `ffmpeg-static` (Phase 02)
+> remains flagged for licensing/packaging review before commercial distribution.
 
 ## The append-only record rule
 

@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "channel-studio-ai/schemas/production-package.schema.json",
+  "title": "ProductionPackageManifest",
+  "description": "Manifest (package.json) for one video's external-production package. Offline, not published, human review pending.",
+  "type": "object",
+  "required": [
+    "videoId",
+    "title",
+    "campaignId",
+    "generatedAt",
+    "published",
+    "liveStatus",
+    "fallback",
+    "artifacts",
+    "adapters",
+    "review",
+    "disclaimer"
+  ],
+  "properties": {
+    "videoId": { "type": "string", "pattern": "^[A-Z0-9]{2,12}-[0-9]{2,4}$" },
+    "title": { "type": "string", "minLength": 1 },
+    "campaignId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "minLength": 1 },
+    "published": { "type": "boolean", "const": false },
+    "liveStatus": { "type": "string", "const": "LIVE-INTEGRATION-BLOCKED" },
+    "fallback": { "type": "string", "const": "local-mock-render" },
+    "artifacts": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "object",
+        "required": ["name", "file", "checksum"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "file": { "type": "string", "minLength": 1 },
+          "checksum": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+        }
+      }
+    },
+    "adapters": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["adapterId", "vendor", "kind", "liveStatus", "payloadFile", "checksum"],
+        "properties": {
+          "adapterId": { "type": "string", "minLength": 1 },
+          "vendor": { "type": "string", "minLength": 1 },
+          "kind": {
+            "type": "string",
+            "enum": ["avatar-video", "generative-video", "design-graphics", "voiceover"]
+          },
+          "liveStatus": { "type": "string", "enum": ["LIVE-INTEGRATION-BLOCKED", "LIVE-READY"] },
+          "credentialsPresent": { "type": "boolean" },
+          "payloadFile": { "type": "string", "minLength": 1 },
+          "checksum": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": ["gate", "decision", "required", "blocking"],
+      "properties": {
+        "gate": { "type": "string", "minLength": 1 },
+        "decision": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
+        "required": { "type": "boolean" },
+        "blocking": { "type": "boolean" }
+      }
+    },
+    "capabilityMatrix": { "type": "array" },
+    "disclaimer": { "type": "string", "minLength": 1 }
+  }
+}

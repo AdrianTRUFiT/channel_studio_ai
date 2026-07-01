@@ -56,9 +56,16 @@ export function validateCampaignObject(campaign: unknown): string[] {
   const c = campaign as Campaign;
   const videos = Array.isArray(c?.videos) ? c.videos : [];
 
-  // 2. Exactly 20 videos (the schema only enforces a minimum).
-  if (videos.length !== REQUIRED_VIDEO_COUNT) {
-    errors.push(`campaign must contain exactly ${REQUIRED_VIDEO_COUNT} videos, found ${videos.length}`);
+  // 2. Exactly as many videos as the campaign declares (default 20). The
+  //    intake engine may generate other sizes; each campaign self-declares its
+  //    target and must match it exactly.
+  const expected =
+    typeof c?.targetVideoCount === "number" ? c.targetVideoCount : REQUIRED_VIDEO_COUNT;
+  if (!Number.isInteger(expected) || expected < 1) {
+    errors.push(`campaign.targetVideoCount must be a positive integer, found ${String(c?.targetVideoCount)}`);
+  }
+  if (videos.length !== expected) {
+    errors.push(`campaign must contain exactly ${expected} videos, found ${videos.length}`);
   }
 
   // 3. statusModel must deep-equal the canonical enum, in order.
