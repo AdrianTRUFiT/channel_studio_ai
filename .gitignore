@@ -15,3 +15,7 @@ outputs/manifests/*
 # Phase 03 external-production packages (generated, never committed)
 outputs/production/*
 !outputs/production/.gitkeep
+
+# Shift 02 intake run manifests (generated, never committed)
+outputs/intake/*
+!outputs/intake/.gitkeep

@@ -15,6 +15,7 @@
 import { buildProductionPackage, writeProductionPackage } from "../src/production/productionPackage.ts";
 import { allAdaptersBlocked } from "../src/adapters/registry.ts";
 import { TARGET_VIDEO_ID } from "../src/production/types.ts";
+import { loadCampaign } from "../src/campaign/campaign.ts";
 
 function flag(name: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
@@ -22,11 +23,23 @@ function flag(name: string): string | undefined {
 }
 
 function main(): number {
-  const videoId = flag("video") ?? TARGET_VIDEO_ID;
+  // Optional governed campaign file (e.g. from the intake engine). When given
+  // without --video, default to that campaign's first video.
+  const campaignPath = flag("campaign");
+  const videoId =
+    flag("video") ?? (campaignPath ? loadCampaign(campaignPath).videos[0]?.id : TARGET_VIDEO_ID);
+  if (!videoId) {
+    process.stderr.write("build:production: campaign has no videos\n");
+    return 1;
+  }
 
-  process.stdout.write(`Channel Studio AI — external creative production package\n  video: ${videoId}\n`);
+  process.stdout.write(
+    `Channel Studio AI — external creative production package\n` +
+      `  campaign: ${campaignPath ?? "data/campaigns/the-mind-is-a-computer.campaign.json (default)"}\n` +
+      `  video: ${videoId}\n`,
+  );
 
-  const pkg = buildProductionPackage(videoId);
+  const pkg = buildProductionPackage(videoId, campaignPath);
   const { dir, manifestPath } = writeProductionPackage(pkg);
 
   const liveReady = pkg.adapterPayloads.filter((p) => p.liveStatus === "LIVE-READY").length;

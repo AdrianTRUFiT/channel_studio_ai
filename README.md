@@ -112,6 +112,42 @@ The campaign state model is governed under `src/campaign/` and validated by
 > Phase 00 hashed output. The Phase 00 gate was re-run so its PASS record stays
 > current — proof currency working as designed, not bypassed.
 
+## Campaign intake (operator)
+
+The deterministic **Campaign Intake Engine** turns an operator topic into a
+governed, schema-valid campaign — no UI required; CLI, desktop, and web
+front-ends all call the same core (`src/intake/campaignIntake.ts`).
+
+```bash
+npm run intake -- --topic "Sleep Optimization for Founders"                # 20 videos (default)
+npm run intake -- --topic "Chess Openings" --count 10 --mode smoke         # custom count/mode
+```
+
+Outputs: `data/campaigns/<slug>.campaign.json` (governed campaign, validated
+against the campaign/video/agent-state schemas before writing) and an intake
+run manifest at `outputs/intake/<slug>.intake.json` (git-ignored) with a
+checksum, the video ids, and the exact downstream commands. Video ids get a
+deterministic topic acronym (e.g. `SOF-01`), so render outputs never collide
+with the sample campaign's `tmiac-*` files. All generated copy is
+template-derived and labelled mock; intake queries no external source.
+
+Generated campaigns flow straight into the existing pipeline:
+
+```bash
+npm run build:production -- --campaign data/campaigns/<slug>.campaign.json --video SOF-01
+npm run produce:videos  -- --campaign data/campaigns/<slug>.campaign.json
+```
+
+Each campaign self-declares `targetVideoCount` and must match it exactly; the
+sample campaign's 20-video contract is unchanged and still enforced by
+`gates/check_phase_01.sh`.
+
+> Offline installs: `ffmpeg-static` is an **optional** dependency — if its
+> binary download is blocked, `npm install` still succeeds and the renderer
+> falls back to `$CSAI_FFMPEG` or a system `ffmpeg` (or honestly reports
+> `blocked-no-ffmpeg`). Set `CSAI_FFMPEG=/path/to/ffmpeg` to certify gates on
+> machines without the vendored binary.
+
 ## Local video production (Phase 02)
 
 Phase 02 makes the machine produce **actual local MP4 files** from the governed

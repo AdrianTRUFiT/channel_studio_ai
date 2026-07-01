@@ -6,10 +6,10 @@
 
 - **Phase:** 00 — Runtime Foundation
 - **Status:** PASS
-- **Timestamp:** 2026-06-22T20:48:45.088Z
+- **Timestamp:** 2026-07-01T20:34:17.058Z
 - **Gate script:** `gates/check_phase_00.sh`
-- **Git commit:** 09b730408a2281d3c9be732c32532ff46c8cd834
-- **Content hash:** `sha256:e7dddc3a752e04a1b75ddda9a8dcddb685237fd0d83d5a8b3cdd6f5162f15594`
+- **Git commit:** 74fd6addb8ad3393cdfcd97a05211623205df2a5
+- **Content hash:** `sha256:04e92742cda88a50b6fab34994599b9892f4672ae166c74401171d868a261fcd`
 - **Hashed outputs:** `package.json`, `tsconfig.json`, `orchestrator/runner.ts`, `gates/shared/gateUtils.ts`, `src/phases.ts`, `schemas/phase.schema.json`, `schemas/pass-record.schema.json`, `schemas/fail-record.schema.json`, `gates/check_phase_00.sh`, `hooks/pre_phase_guard.sh`, `hooks/stop_guard.sh`
 - **Test summary:** npm install ok; tsc --noEmit clean; schemas valid; orchestrator status ok; node --test foundation suite passed
 - **Next unlocked phase:** 01
@@ -19,10 +19,10 @@
   "phaseId": "00",
   "phaseName": "Runtime Foundation",
   "status": "PASS",
-  "timestamp": "2026-06-22T20:48:45.088Z",
+  "timestamp": "2026-07-01T20:34:17.058Z",
   "gateScript": "gates/check_phase_00.sh",
-  "gitCommit": "09b730408a2281d3c9be732c32532ff46c8cd834",
-  "contentHash": "sha256:e7dddc3a752e04a1b75ddda9a8dcddb685237fd0d83d5a8b3cdd6f5162f15594",
+  "gitCommit": "74fd6addb8ad3393cdfcd97a05211623205df2a5",
+  "contentHash": "sha256:04e92742cda88a50b6fab34994599b9892f4672ae166c74401171d868a261fcd",
   "hashedOutputs": [
     "package.json",
     "tsconfig.json",

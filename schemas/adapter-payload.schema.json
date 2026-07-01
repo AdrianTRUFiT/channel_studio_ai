@@ -24,7 +24,7 @@
       "type": "string",
       "enum": ["avatar-video", "generative-video", "design-graphics", "voiceover"]
     },
-    "videoId": { "type": "string", "pattern": "^MIAC-[0-9]{2}$" },
+    "videoId": { "type": "string", "pattern": "^[A-Z0-9]{2,12}-[0-9]{2,4}$" },
     "request": { "type": "object" },
     "liveStatus": { "type": "string", "enum": ["LIVE-INTEGRATION-BLOCKED", "LIVE-READY"] },
     "dryRun": { "type": "boolean", "const": true },
