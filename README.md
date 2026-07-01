@@ -148,6 +148,41 @@ encodes the frames into an H.264 MP4 with a **silent placeholder audio track**.
 matching file hashes, emits `records/PHASE_02_PASS.md`, verifies it, and confirms
 **Phase 03 remains locked**.
 
+## External creative production adapter (Phase 03)
+
+Phase 03 is the **real production lane**: it converts one governed campaign video
+record into a complete, polished-PRODUCTION package for external tools — while
+the Phase 02 local renderer stays as the **fallback/proof lane**.
+
+```bash
+npm run build:production                 # builds the package for MIAC-01
+npm run build:production -- --video MIAC-03
+```
+
+The package (written to `outputs/production/<videoId>/`, git-ignored) contains:
+script package + `SCRIPT.md`, scene-by-scene storyboard, visual prompt pack,
+voiceover script (SSML), animation direction, **four adapter payloads**
+(HeyGen, Higgsfield, Canva, Voiceover), a render-request package, and a
+`REVIEW.md` human review gate — plus a `package.json` manifest with checksums.
+
+**Contracts first, no live calls.** Each external tool is an
+[`AdapterContract`](src/adapters/adapterContract.ts) + an **offline** payload
+builder. Phase 03 calls **no** vendor API: every payload is a `dryRun`,
+`published:false`, `LIVE-INTEGRATION-BLOCKED` artifact. Going live requires both
+(a) provisioned credentials and (b) explicit paid-API approval — and it still
+passes through the blocking **MAPS human review gate** (`decision: Pending`).
+The local renderer (`local-mock-render`) is the declared fallback for every lane.
+
+`gates/check_phase_03.sh` verifies Phase 02 is current, typechecks, tests,
+validates the four adapter **contracts** (all blocked), builds the package for
+**one** video, validates the manifest + all four payloads, asserts the review
+gate is Pending/blocking and nothing is published, emits
+`records/PHASE_03_PASS.md`, verifies it, and confirms **Phase 04 stays locked**.
+
+> Future review: live connectors (HeyGen/Higgsfield/Canva/TTS) are deferred
+> until a single controlled, approved connector test. `ffmpeg-static` (Phase 02)
+> remains flagged for licensing/packaging review before commercial distribution.
+
 ## The append-only record rule
 
 - PASS records are **never** written by hand — only by gate scripts via
