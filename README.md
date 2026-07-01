@@ -159,11 +159,15 @@ npm run build:production                 # builds the package for MIAC-01
 npm run build:production -- --video MIAC-03
 ```
 
-The package (written to `outputs/production/<videoId>/`, git-ignored) contains:
-script package + `SCRIPT.md`, scene-by-scene storyboard, visual prompt pack,
-voiceover script (SSML), animation direction, **four adapter payloads**
-(HeyGen, Higgsfield, Canva, Voiceover), a render-request package, and a
-`REVIEW.md` human review gate — plus a `package.json` manifest with checksums.
+The package (written to `outputs/production/<videoId>/`, git-ignored) is the
+complete 9-part governed production contract: **research brief** (offline,
+mock-scored), **narrative blueprint** (packaging + retention design), script
+package + `SCRIPT.md`, scene-by-scene storyboard, visual prompt pack, voiceover
+script (SSML), animation direction, **four adapter payloads** (HeyGen,
+Higgsfield, Canva, Voiceover) with a render-request package, a `REVIEW.md`
+human review gate, and a **publish package** (title/description/hashtags/
+thumbnail direction, `visibility: private`, AI disclosure, `autoPostAllowed:
+false` pending human approval) — plus a `package.json` manifest with checksums.
 
 **Contracts first, no live calls.** Each external tool is an
 [`AdapterContract`](src/adapters/adapterContract.ts) + an **offline** payload

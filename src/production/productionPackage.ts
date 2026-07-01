@@ -16,6 +16,9 @@ import { ADAPTERS, ROLE_ROUTES, capabilityMatrix } from "../adapters/registry.ts
 import { checksumOf, type AdapterPayload } from "../adapters/adapterContract.ts";
 import { buildScriptPackage, scriptMarkdown } from "./scriptPackage.ts";
 import { buildStoryboard } from "./storyboard.ts";
+import { buildResearchBrief } from "./researchBrief.ts";
+import { buildBlueprint } from "./blueprint.ts";
+import { buildPublishPackage } from "./publishPackage.ts";
 import {
   buildVisualPromptPack,
   buildVoiceoverScript,
@@ -42,12 +45,15 @@ export function buildProductionPackage(
   const video = campaign.videos.find((v) => v.id === videoId);
   if (!video) throw new Error(`unknown video id ${videoId}`);
 
+  const research = buildResearchBrief(campaign, video);
   const script = buildScriptPackage(campaign, video);
   const storyboard = buildStoryboard(script, video);
+  const blueprint = buildBlueprint(campaign, video, research, script, storyboard);
   const visualPrompts = buildVisualPromptPack(storyboard, video.authorityPillar);
   const voiceover = buildVoiceoverScript(storyboard);
   const animation = buildAnimationDirection(script, storyboard);
   const review = buildReviewPackage(videoId);
+  const publishPackage = buildPublishPackage(campaign, video, script, blueprint);
 
   const pkg: ProductionPackage = {
     videoId,
@@ -56,6 +62,8 @@ export function buildProductionPackage(
     generatedAt: new Date().toISOString(),
     published: false,
     liveStatus: "LIVE-INTEGRATION-BLOCKED",
+    research,
+    blueprint,
     script,
     storyboard,
     visualPrompts,
@@ -72,6 +80,7 @@ export function buildProductionPackage(
       note: "Lanes route roles to external tools, but live render is blocked pending credentials and human approval.",
     },
     review,
+    publishPackage,
     disclaimer:
       "Phase 03 external-production package. No external tool was called; all adapter payloads are " +
       "offline dry-runs. Live render is LIVE-INTEGRATION-BLOCKED and nothing is published. The Phase 02 " +
@@ -111,6 +120,8 @@ export function writeProductionPackage(pkg: ProductionPackage, baseDir?: string)
     artifacts.push({ name, file, checksum: checksumOf(text) });
   };
 
+  put("research-brief", "research.json", pkg.research);
+  put("narrative-blueprint", "blueprint.json", pkg.blueprint);
   put("script-package", "script-package.json", pkg.script);
   put("script-md", "SCRIPT.md", scriptMarkdown(pkg.script));
   put("storyboard", "storyboard.json", pkg.storyboard);
@@ -120,6 +131,7 @@ export function writeProductionPackage(pkg: ProductionPackage, baseDir?: string)
   put("review-package", "review-package.json", pkg.review);
   put("review-md", "REVIEW.md", reviewMarkdown(pkg.review, pkg.title));
   put("render-request", "render-request.json", pkg.renderRequest);
+  put("publish-package", "publish-package.json", pkg.publishPackage);
 
   const adapters = pkg.adapterPayloads.map((payload) => {
     const file = `adapters/${slugFor(payload.adapterId)}.payload.json`;
@@ -175,12 +187,30 @@ export function validateProductionManifestObject(manifest: unknown): string[] {
   );
   const m = manifest as {
     adapters?: Array<{ vendor?: string; liveStatus?: string }>;
+    artifacts?: Array<{ name?: string }>;
     published?: boolean;
     liveStatus?: string;
   };
   if (m?.published !== false) errors.push("production-package: published must be false");
   if (m?.liveStatus !== "LIVE-INTEGRATION-BLOCKED") {
     errors.push("production-package: liveStatus must be LIVE-INTEGRATION-BLOCKED in Phase 03");
+  }
+  // The complete governed package: every named artifact must be present.
+  const REQUIRED_ARTIFACTS = [
+    "research-brief",
+    "narrative-blueprint",
+    "script-package",
+    "storyboard",
+    "visual-prompt-pack",
+    "voiceover-script",
+    "animation-direction",
+    "review-package",
+    "render-request",
+    "publish-package",
+  ];
+  const present = new Set((m?.artifacts ?? []).map((a) => a.name));
+  for (const name of REQUIRED_ARTIFACTS) {
+    if (!present.has(name)) errors.push(`production-package: missing required artifact "${name}"`);
   }
   if (Array.isArray(m?.adapters)) {
     if (m.adapters.length < 4) errors.push("production-package: expected at least 4 adapter lanes");

@@ -62,9 +62,10 @@ cat /tmp/p03_manifest.log | sed 's/^/    /'
 # 7. All required artifacts present.
 step "confirming all package artifacts exist"
 REQUIRED=(
+  "research.json" "blueprint.json"
   "script-package.json" "SCRIPT.md" "storyboard.json" "visual-prompt-pack.json"
   "voiceover-script.json" "animation-direction.json" "review-package.json" "REVIEW.md"
-  "render-request.json"
+  "render-request.json" "publish-package.json"
   "adapters/heygen.payload.json" "adapters/higgsfield.payload.json"
   "adapters/canva.payload.json" "adapters/voiceover.payload.json"
 )
@@ -92,10 +93,26 @@ node -e '
 ' "$MANIFEST" >/tmp/p03_assert.log 2>&1 || fail "safety assertion failed:\n$(cat /tmp/p03_assert.log)"
 cat /tmp/p03_assert.log | sed 's/^/    /'
 
+# 9b. Publish safety: auto-post hard-blocked, private, disclosed, unapproved.
+step "asserting publish package blocks auto-post and requires human approval"
+node -e '
+  const fs=require("fs");
+  const p=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));
+  if(p.autoPostAllowed!==false){console.error("autoPostAllowed must be false");process.exit(1);}
+  if(p.requiresHumanApproval!==true){console.error("requiresHumanApproval must be true");process.exit(1);}
+  if(p.visibility!=="private"){console.error("visibility must be private");process.exit(1);}
+  if(p.published!==false){console.error("published must be false");process.exit(1);}
+  if(p.approval.state!=="Pending"){console.error("approval must be Pending");process.exit(1);}
+  if(!p.aiDisclosure||p.aiDisclosure.syntheticVoice!==true){console.error("AI voice disclosure required");process.exit(1);}
+  console.log("publish package safe: auto-post blocked, private, AI-disclosed, approval Pending");
+' "${PKG_DIR}/publish-package.json" >/tmp/p03_publish.log 2>&1 \
+  || fail "publish safety assertion failed:\n$(cat /tmp/p03_publish.log)"
+cat /tmp/p03_publish.log | sed 's/^/    /'
+
 # 10. Emit PASS record (hashes committed source only).
 step "emitting PASS record"
-HASHED_FILES="src/production/types.ts,src/production/scriptPackage.ts,src/production/storyboard.ts,src/production/creativeBriefs.ts,src/production/reviewPackage.ts,src/production/productionPackage.ts,src/adapters/adapterContract.ts,src/adapters/heygenAdapter.ts,src/adapters/higgsfieldAdapter.ts,src/adapters/canvaAdapter.ts,src/adapters/voiceoverAdapter.ts,src/adapters/registry.ts,src/adapters/validate.ts,scripts/build_production_package.ts,schemas/adapter-contract.schema.json,schemas/adapter-payload.schema.json,schemas/production-package.schema.json,gates/check_phase_03.sh,tests/phase_03.production.test.ts,outputs/production/.gitkeep"
-TEST_SUMMARY="Phase 02 current; tsc clean; node --test passed; 4 adapter contracts valid + all LIVE-INTEGRATION-BLOCKED; built offline production package for ${VIDEO}; manifest + 4 payloads validate; review Pending/blocking; nothing published"
+HASHED_FILES="src/production/types.ts,src/production/scriptPackage.ts,src/production/storyboard.ts,src/production/creativeBriefs.ts,src/production/reviewPackage.ts,src/production/researchBrief.ts,src/production/blueprint.ts,src/production/publishPackage.ts,src/production/productionPackage.ts,src/adapters/adapterContract.ts,src/adapters/heygenAdapter.ts,src/adapters/higgsfieldAdapter.ts,src/adapters/canvaAdapter.ts,src/adapters/voiceoverAdapter.ts,src/adapters/registry.ts,src/adapters/validate.ts,scripts/build_production_package.ts,schemas/adapter-contract.schema.json,schemas/adapter-payload.schema.json,schemas/production-package.schema.json,gates/check_phase_03.sh,tests/phase_03.production.test.ts,outputs/production/.gitkeep"
+TEST_SUMMARY="Phase 02 current; tsc clean; node --test passed; 4 adapter contracts valid + all LIVE-INTEGRATION-BLOCKED; built complete offline production package for ${VIDEO} (research, blueprint, script, storyboard, prompts, voice, adapters, review, publish); manifest + 4 payloads validate; publish auto-post blocked; review Pending/blocking; nothing published"
 
 node "$UTILS" emit-pass "$PHASE" --files "$HASHED_FILES" --tests "$TEST_SUMMARY" || fail "could not emit PASS record"
 

@@ -32,12 +32,15 @@ function main(): number {
   const liveReady = pkg.adapterPayloads.filter((p) => p.liveStatus === "LIVE-READY").length;
   process.stdout.write(
     `\nBuilt package at: ${dir}\n` +
+      `  research:    opportunity aggregate ${pkg.research.opportunityScore.aggregate} (mock heuristic)\n` +
+      `  blueprint:   ${pkg.blueprint.titleOptions.length} title options, ${pkg.blueprint.beats.length} beats\n` +
       `  script:      ${pkg.script.wordCount} words (~${pkg.script.estimatedDurationSeconds}s)\n` +
       `  storyboard:  ${pkg.storyboard.scenes.length} scenes (${pkg.storyboard.totalDurationSeconds}s, ${pkg.storyboard.aspectRatio})\n` +
       `  prompts:     ${pkg.visualPrompts.prompts.length} visual prompts\n` +
       `  voiceover:   ${pkg.voiceover.lines.length} lines (${pkg.voiceover.totalWords} words)\n` +
       `  adapters:    ${pkg.adapterPayloads.length} payloads (HeyGen, Higgsfield, Canva, Voiceover)\n` +
       `  review:      ${pkg.review.decision} (blocking=${pkg.review.blocking})\n` +
+      `  publish:     ${pkg.publishPackage.visibility}, autoPost=${pkg.publishPackage.autoPostAllowed}, approval ${pkg.publishPackage.approval.state}\n` +
       `  liveStatus:  ${pkg.liveStatus}  ·  published=${pkg.published}\n` +
       `  manifest:    ${manifestPath}\n`,
   );

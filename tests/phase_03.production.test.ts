@@ -43,6 +43,52 @@ test("production package assembles all required parts for one video", () => {
   assert.equal(pkg.review.blocking, true);
 });
 
+test("package includes research, blueprint, and publish package (the 9-part contract)", () => {
+  const pkg = buildProductionPackage("MIAC-01");
+  // Research: offline, mock-labelled, scores in range.
+  assert.equal(pkg.research.generator, "deterministic-template");
+  assert.ok(pkg.research.audienceQuestions.length >= 3);
+  const s = pkg.research.opportunityScore;
+  for (const v of [s.demand, s.brandFit, s.monetization, s.retention, s.originality]) {
+    assert.ok(v >= 1 && v <= 5, `score ${v} out of 1-5 range`);
+  }
+  assert.match(s.method, /mock/i);
+  // Blueprint: packaging + beats aligned to the storyboard.
+  assert.ok(pkg.blueprint.titleOptions.length >= 2);
+  assert.equal(pkg.blueprint.beats.length, pkg.storyboard.scenes.length);
+  assert.ok(pkg.blueprint.corePromise.length > 0);
+  // Publish package: metadata ready, posting hard-blocked.
+  const pub = pkg.publishPackage;
+  assert.equal(pub.autoPostAllowed, false);
+  assert.equal(pub.requiresHumanApproval, true);
+  assert.equal(pub.visibility, "private");
+  assert.equal(pub.published, false);
+  assert.equal(pub.approval.state, "Pending");
+  assert.equal(pub.aiDisclosure.syntheticVoice, true);
+  assert.ok(pub.hashtags.length > 0 && pub.hashtags.every((h) => h.startsWith("#")));
+});
+
+test("opportunity scores are deterministic across builds", () => {
+  const a = buildProductionPackage("MIAC-01").research.opportunityScore;
+  const b = buildProductionPackage("MIAC-01").research.opportunityScore;
+  assert.deepEqual(a, b);
+});
+
+test("NEGATIVE: a manifest missing the publish-package artifact is rejected", () => {
+  const pkg = buildProductionPackage("MIAC-01");
+  const dir = mkdtempSync(join(tmpdir(), "csai-prod-"));
+  try {
+    const { manifest } = writeProductionPackage(pkg, dir);
+    const artifacts = (manifest.artifacts as Array<{ name: string }>).filter(
+      (a) => a.name !== "publish-package",
+    );
+    const errors = validateProductionManifestObject({ ...manifest, artifacts });
+    assert.ok(errors.some((e) => /publish-package/.test(e)), errors.join("\n"));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("storyboard scene durations sum to the storyboard total", () => {
   const pkg = buildProductionPackage("MIAC-01");
   const sum = pkg.storyboard.scenes.reduce((a, s) => a + s.durationSeconds, 0);

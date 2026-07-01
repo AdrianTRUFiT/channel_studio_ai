@@ -98,6 +98,76 @@ export interface AnimationDirection {
   perScene: PerSceneDirection[];
 }
 
+/** Mock-deterministic opportunity scores (1–5). NOT real demand data. */
+export interface OpportunityScore {
+  demand: number;
+  brandFit: number;
+  monetization: number;
+  retention: number;
+  originality: number;
+  aggregate: number;
+  method: string;
+}
+
+/** Research brief derived from governed campaign fields. Honest: no live data. */
+export interface ResearchBrief {
+  videoId: string;
+  topic: string;
+  authorityPillar: string;
+  generator: "deterministic-template";
+  audienceQuestions: string[];
+  searchKeywords: string[];
+  contentAngle: string;
+  opportunityScore: OpportunityScore;
+  sources: string[];
+  disclaimer: string;
+}
+
+export interface TitleOption {
+  title: string;
+  style: string;
+}
+
+export interface BlueprintBeat {
+  index: number;
+  beat: string;
+  purpose: string;
+}
+
+/** Narrative blueprint: packaging + retention design for one video. */
+export interface NarrativeBlueprint {
+  videoId: string;
+  generator: "deterministic-template";
+  targetAudience: string;
+  corePromise: string;
+  narrativeAngle: string;
+  retentionDesign: string[];
+  titleOptions: TitleOption[];
+  thumbnailConcept: string;
+  beats: BlueprintBeat[];
+}
+
+/** Publish-ready metadata. Auto-post is HARD-BLOCKED pending human approval. */
+export interface PublishPackage {
+  videoId: string;
+  platform: "youtube";
+  title: string;
+  description: string;
+  hashtags: string[];
+  thumbnailDirection: string;
+  visibility: "private";
+  aiDisclosure: {
+    syntheticVoice: boolean;
+    syntheticVisuals: boolean;
+    disclosureText: string;
+  };
+  autoPostAllowed: false;
+  requiresHumanApproval: true;
+  approval: { state: "Pending"; approver: null };
+  published: false;
+  disclaimer: string;
+}
+
 export type ReviewDecision = "Pending" | "Approved" | "Rejected";
 
 /** MAPS human review firewall: blocks any live render until approved. */
@@ -140,6 +210,8 @@ export interface ProductionPackage {
   generatedAt: string;
   published: false;
   liveStatus: "LIVE-INTEGRATION-BLOCKED";
+  research: ResearchBrief;
+  blueprint: NarrativeBlueprint;
   script: ScriptPackage;
   storyboard: Storyboard;
   visualPrompts: VisualPromptPack;
@@ -148,5 +220,6 @@ export interface ProductionPackage {
   adapterPayloads: AdapterPayload[];
   renderRequest: RenderRequestPackage;
   review: ReviewPackage;
+  publishPackage: PublishPackage;
   disclaimer: string;
 }
