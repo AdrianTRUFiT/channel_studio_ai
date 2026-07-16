@@ -60,7 +60,7 @@
     },
     "videos": {
       "type": "array",
-      "minItems": 20,
+      "minItems": 1,
       "items": { "type": "object" }
     },
     "maps": {

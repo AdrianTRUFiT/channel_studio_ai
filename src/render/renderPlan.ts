@@ -48,11 +48,18 @@ const PALETTE: Record<SceneKind, { top: RGB; bottom: RGB }> = {
   disclaimer: { top: { r: 36, g: 28, b: 10 }, bottom: { r: 18, g: 14, b: 6 } },
 };
 
-/** Map a campaign video id (MIAC-01) to an output id (tmiac-001). */
+/**
+ * Map a campaign video id to an output id: prefix lowercased + 3-digit number
+ * (e.g. SOF-01 → sof-001), so different campaigns never collide in
+ * outputs/videos/. "miac" keeps its historical "tmiac" alias — the filename
+ * contract from Issue #6 for the sample campaign (tmiac-001.mp4 …).
+ */
 export function outputIdFor(videoId: string): string {
-  const m = videoId.match(/(\d+)\s*$/);
-  const n = m ? parseInt(m[1], 10) : 0;
-  return `tmiac-${String(n).padStart(3, "0")}`;
+  const m = videoId.match(/^([A-Za-z0-9]+)-0*(\d+)$/);
+  const prefix = (m?.[1] ?? "video").toLowerCase();
+  const n = m ? parseInt(m[2], 10) : 0;
+  const alias = prefix === "miac" ? "tmiac" : prefix;
+  return `${alias}-${String(n).padStart(3, "0")}`;
 }
 
 function scene(kind: SceneKind, heading: string, body: string, weight: number): {

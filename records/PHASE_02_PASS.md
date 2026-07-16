@@ -6,12 +6,12 @@
 
 - **Phase:** 02 — Local Video Production Engine
 - **Status:** PASS
-- **Timestamp:** 2026-06-22T13:44:30.367Z
+- **Timestamp:** 2026-07-01T20:36:19.913Z
 - **Gate script:** `gates/check_phase_02.sh`
-- **Git commit:** f0818d1bc07fdfebd6a1a2bd054d8b10791d053e
-- **Content hash:** `sha256:d35d209861e0b500fcbd67b90dc266022e0fbe6581cd03166cc02ad6abbe469f`
+- **Git commit:** 74fd6addb8ad3393cdfcd97a05211623205df2a5
+- **Content hash:** `sha256:8e945e693514bb5d51d554ded2958df65ea0b788a4492267931b842fd390fccf`
 - **Hashed outputs:** `src/render/frameCanvas.ts`, `src/render/renderPlan.ts`, `src/render/renderManifest.ts`, `src/render/videoProducer.ts`, `scripts/produce_videos.ts`, `schemas/render-manifest.schema.json`, `gates/check_phase_02.sh`, `tests/phase_02.render.test.ts`, `outputs/videos/.gitkeep`, `outputs/manifests/.gitkeep`
-- **Test summary:** Phase 01 current; tsc --noEmit clean; node --test passed; smoke produced 20 local MP4(s); manifest validates; artifact file hashes verified
+- **Test summary:** Phase 01 current; tsc --noEmit clean; node --test passed; smoke produced 22 local MP4(s); manifest validates; artifact file hashes verified
 - **Next unlocked phase:** 03
 
 ```json
@@ -19,10 +19,10 @@
   "phaseId": "02",
   "phaseName": "Local Video Production Engine",
   "status": "PASS",
-  "timestamp": "2026-06-22T13:44:30.367Z",
+  "timestamp": "2026-07-01T20:36:19.913Z",
   "gateScript": "gates/check_phase_02.sh",
-  "gitCommit": "f0818d1bc07fdfebd6a1a2bd054d8b10791d053e",
-  "contentHash": "sha256:d35d209861e0b500fcbd67b90dc266022e0fbe6581cd03166cc02ad6abbe469f",
+  "gitCommit": "74fd6addb8ad3393cdfcd97a05211623205df2a5",
+  "contentHash": "sha256:8e945e693514bb5d51d554ded2958df65ea0b788a4492267931b842fd390fccf",
   "hashedOutputs": [
     "src/render/frameCanvas.ts",
     "src/render/renderPlan.ts",
@@ -35,7 +35,7 @@
     "outputs/videos/.gitkeep",
     "outputs/manifests/.gitkeep"
   ],
-  "testSummary": "Phase 01 current; tsc --noEmit clean; node --test passed; smoke produced 20 local MP4(s); manifest validates; artifact file hashes verified",
+  "testSummary": "Phase 01 current; tsc --noEmit clean; node --test passed; smoke produced 22 local MP4(s); manifest validates; artifact file hashes verified",
   "nextUnlockedPhase": "03"
 }
 ```

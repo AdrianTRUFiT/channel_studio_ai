@@ -45,9 +45,14 @@ function main(): number {
     );
   }
 
+  // Optional governed campaign file (e.g. from the intake engine); defaults to
+  // the sample campaign when omitted.
+  const campaignPath = flag("campaign");
+
   const opts = smoke
     ? {
         mode: "smoke" as const,
+        campaignPath,
         limit: num("limit") ?? 2,
         totalSeconds: num("seconds") ?? 6,
         width: num("width") ?? 640,
@@ -56,6 +61,7 @@ function main(): number {
       }
     : {
         mode: "full" as const,
+        campaignPath,
         limit: num("limit"),
         totalSeconds: num("seconds"),
         width: num("width") ?? 1280,
