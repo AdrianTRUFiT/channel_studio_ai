@@ -41,6 +41,7 @@ export interface IntakeInput {
   /** Optional product framing (defaults derived from the topic). */
   productTitle?: string;
   productType?: string;
+  contentBrief?: Partial<ContentBrief>;
   /** Injectable clock for byte-deterministic output (tests). */
   now?: Date;
 }
