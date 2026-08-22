@@ -1,21 +1,31 @@
 import { useState } from "react";
-import campaign from "./data/campaign.js";
 import Header from "./components/Header.jsx";
 import MapsBanner from "./components/MapsBanner.jsx";
 import CampaignOverview from "./components/CampaignOverview.jsx";
 import PipelineStatusCards from "./components/PipelineStatusCards.jsx";
 import ProductionFloor from "./components/ProductionFloor.jsx";
 import RenderStatus from "./components/RenderStatus.jsx";
+import IntakeForm from "./components/IntakeForm.jsx";
+import CampaignSelector from "./components/CampaignSelector.jsx";
+import { useCampaigns } from "./hooks/useCampaigns.js";
 
 const TABS = [
   { id: "dashboard", label: "Dashboard" },
   { id: "floor", label: "Production Floor" },
   { id: "render", label: "Video Production" },
-  { id: "intake", label: "Campaign Intake" },
+  { id: "intake", label: "Create Campaign" },
 ];
 
 export default function App() {
   const [tab, setTab] = useState("dashboard");
+  const { apiAvailable, campaigns, activeFile, campaign, selectCampaign, refreshList } =
+    useCampaigns();
+
+  async function handleCreated(result, jumpToDashboard) {
+    await refreshList();
+    await selectCampaign(result.campaignFile.replace("data/campaigns/", ""));
+    if (jumpToDashboard) setTab("dashboard");
+  }
 
   return (
     <div className="app">
@@ -32,6 +42,7 @@ export default function App() {
             {t.label}
           </button>
         ))}
+        <CampaignSelector campaigns={campaigns} activeFile={activeFile} onSelect={selectCampaign} />
       </nav>
 
       {tab === "dashboard" && (
@@ -52,8 +63,14 @@ export default function App() {
       {tab === "intake" && (
         <>
           <div className="section-h">
-            <h2>Campaign Intake</h2>
-            <span className="hint">Phase 01 — campaign + state model</span>
+            <h2>Create Campaign</h2>
+            <span className="hint">Governed content brief → Campaign Intake Engine</span>
+          </div>
+          <IntakeForm apiAvailable={apiAvailable} onCreated={handleCreated} />
+
+          <div className="section-h">
+            <h2>Currently viewing</h2>
+            <span className="hint">the active campaign shown across every tab above</span>
           </div>
           <div className="card">
             <div className="label">Campaign</div>
@@ -78,8 +95,8 @@ export default function App() {
       )}
 
       <footer className="foot">
-        Phase 01 dashboard shell · dataSource={campaign.provenance.dataSource} · no live APIs ·
-        governed by gates/check_phase_01.sh
+        dataSource={campaign.provenance.dataSource} · no live APIs · governed by
+        gates/check_phase_01.sh · intake API {apiAvailable ? "connected (npm run dev)" : "unavailable (static build)"}
       </footer>
     </div>
   );

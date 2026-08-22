@@ -13,6 +13,29 @@
     "Memory Systems",
     "Decision OS"
   ],
+  "contentBrief": {
+    "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+    "audiences": [
+      "Self-improvement audiences",
+      "Knowledge workers",
+      "Lifelong learners"
+    ],
+    "coreMessage": "The mind behaves like a computer you can observe, debug, and improve — and this ebook shows you how.",
+    "callToAction": "Read \"The Mind Is a Computer\" to go deeper.",
+    "contentPrinciples": [
+      "Clear",
+      "Practical",
+      "Evidence-aware",
+      "No unsupported claims"
+    ],
+    "sourceAuthority": [
+      "The Mind Is a Computer (ebook)"
+    ],
+    "claimConstraints": [
+      "Do not introduce unsupported factual or causal claims."
+    ],
+    "defaultFormat": "60-second faceless vertical video"
+  },
   "targetVideoCount": 20,
   "status": "Researching",
   "createdAt": "2026-06-21T00:00:00Z",
@@ -70,9 +93,26 @@
       "summary": "Why modeling the mind as a computer changes how you debug your thinking.",
       "authorityPillar": "Cognitive Architecture",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "Why modeling the mind as a computer changes how you debug your thinking.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Published",
-      "review": { "required": true, "decision": "Approved", "reviewer": "human-reviewer (placeholder)", "note": "Approved at inspector firewall (mock)." },
-      "agentState": { "stage": "Published", "assignedAgent": "publish-agent (mock)", "note": "Publish is mocked; nothing was posted.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Approved",
+        "reviewer": "human-reviewer (placeholder)",
+        "note": "Approved at inspector firewall (mock)."
+      },
+      "agentState": {
+        "stage": "Published",
+        "assignedAgent": "publish-agent (mock)",
+        "note": "Publish is mocked; nothing was posted.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -81,9 +121,26 @@
       "summary": "The 'OS' layer of habits, defaults, and identity that runs underneath thought.",
       "authorityPillar": "Mental Models",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "The 'OS' layer of habits, defaults, and identity that runs underneath thought.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Publish Ready",
-      "review": { "required": true, "decision": "Approved", "reviewer": "human-reviewer (placeholder)", "note": "Cleared for publish queue (mock)." },
-      "agentState": { "stage": "Publish Ready", "assignedAgent": "publish-agent (mock)", "note": "Queued in mock publish lane.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Approved",
+        "reviewer": "human-reviewer (placeholder)",
+        "note": "Cleared for publish queue (mock)."
+      },
+      "agentState": {
+        "stage": "Publish Ready",
+        "assignedAgent": "publish-agent (mock)",
+        "note": "Queued in mock publish lane.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -92,9 +149,26 @@
       "summary": "Why you can only hold a few things at once and how to use that limit.",
       "authorityPillar": "Memory Systems",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "Why you can only hold a few things at once and how to use that limit.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Approved",
-      "review": { "required": true, "decision": "Approved", "reviewer": "human-reviewer (placeholder)", "note": "Approved; awaiting publish packaging (mock)." },
-      "agentState": { "stage": "Approved", "assignedAgent": "inspector (human)", "note": "Human approved at review firewall (mock).", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Approved",
+        "reviewer": "human-reviewer (placeholder)",
+        "note": "Approved; awaiting publish packaging (mock)."
+      },
+      "agentState": {
+        "stage": "Approved",
+        "assignedAgent": "inspector (human)",
+        "note": "Human approved at review firewall (mock).",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -103,9 +177,26 @@
       "summary": "Encoding, storage, and retrieval — what actually persists and why.",
       "authorityPillar": "Memory Systems",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "Encoding, storage, and retrieval — what actually persists and why.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Human Review",
-      "review": { "required": true, "decision": "Pending", "reviewer": null, "note": "Awaiting human inspector decision (MAPS firewall)." },
-      "agentState": { "stage": "Human Review", "assignedAgent": "inspector (human)", "note": "Blocked on human approval by design.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Pending",
+        "reviewer": null,
+        "note": "Awaiting human inspector decision (MAPS firewall)."
+      },
+      "agentState": {
+        "stage": "Human Review",
+        "assignedAgent": "inspector (human)",
+        "note": "Blocked on human approval by design.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -114,9 +205,26 @@
       "summary": "How attention allocates scarce processing across competing tasks.",
       "authorityPillar": "Attention Engineering",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "How attention allocates scarce processing across competing tasks.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Human Review",
-      "review": { "required": true, "decision": "Pending", "reviewer": null, "note": "Awaiting human inspector decision (MAPS firewall)." },
-      "agentState": { "stage": "Human Review", "assignedAgent": "inspector (human)", "note": "Blocked on human approval by design.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Pending",
+        "reviewer": null,
+        "note": "Awaiting human inspector decision (MAPS firewall)."
+      },
+      "agentState": {
+        "stage": "Human Review",
+        "assignedAgent": "inspector (human)",
+        "note": "Blocked on human approval by design.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -125,9 +233,26 @@
       "summary": "Reusable thinking shortcuts and when the cache goes stale.",
       "authorityPillar": "Mental Models",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "Reusable thinking shortcuts and when the cache goes stale.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Render Ready",
-      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Has not reached the human review firewall yet." },
-      "agentState": { "stage": "Render Ready", "assignedAgent": "render-agent (mock)", "note": "HTML-to-video render is mocked.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Not Reached",
+        "reviewer": null,
+        "note": "Has not reached the human review firewall yet."
+      },
+      "agentState": {
+        "stage": "Render Ready",
+        "assignedAgent": "render-agent (mock)",
+        "note": "HTML-to-video render is mocked.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -136,9 +261,26 @@
       "summary": "How behaviors run automatically and how to kill a bad one.",
       "authorityPillar": "Decision OS",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "How behaviors run automatically and how to kill a bad one.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Visuals Ready",
-      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Has not reached the human review firewall yet." },
-      "agentState": { "stage": "Visuals Ready", "assignedAgent": "visual-agent (mock)", "note": "Visual packaging is mocked.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Not Reached",
+        "reviewer": null,
+        "note": "Has not reached the human review firewall yet."
+      },
+      "agentState": {
+        "stage": "Visuals Ready",
+        "assignedAgent": "visual-agent (mock)",
+        "note": "Visual packaging is mocked.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -147,9 +289,26 @@
       "summary": "The settings file you inherited and rarely inspect.",
       "authorityPillar": "Cognitive Architecture",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "The settings file you inherited and rarely inspect.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Voice Ready",
-      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Has not reached the human review firewall yet." },
-      "agentState": { "stage": "Voice Ready", "assignedAgent": "voice-agent (mock)", "note": "Voiceover synthesis is mocked.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Not Reached",
+        "reviewer": null,
+        "note": "Has not reached the human review firewall yet."
+      },
+      "agentState": {
+        "stage": "Voice Ready",
+        "assignedAgent": "voice-agent (mock)",
+        "note": "Voiceover synthesis is mocked.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -158,9 +317,26 @@
       "summary": "Why open loops drain throughput and how to close them.",
       "authorityPillar": "Attention Engineering",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "Why open loops drain throughput and how to close them.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Voice Ready",
-      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Has not reached the human review firewall yet." },
-      "agentState": { "stage": "Voice Ready", "assignedAgent": "voice-agent (mock)", "note": "Voiceover synthesis is mocked.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Not Reached",
+        "reviewer": null,
+        "note": "Has not reached the human review firewall yet."
+      },
+      "agentState": {
+        "stage": "Voice Ready",
+        "assignedAgent": "voice-agent (mock)",
+        "note": "Voiceover synthesis is mocked.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -169,9 +345,26 @@
       "summary": "Treating rumination like an infinite loop you can interrupt.",
       "authorityPillar": "Decision OS",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "Treating rumination like an infinite loop you can interrupt.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Script Ready",
-      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Has not reached the human review firewall yet." },
-      "agentState": { "stage": "Script Ready", "assignedAgent": "script-agent (mock)", "note": "Script drafting is mocked.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Not Reached",
+        "reviewer": null,
+        "note": "Has not reached the human review firewall yet."
+      },
+      "agentState": {
+        "stage": "Script Ready",
+        "assignedAgent": "script-agent (mock)",
+        "note": "Script drafting is mocked.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -180,9 +373,26 @@
       "summary": "Recognizing thermal throttling in your own focus.",
       "authorityPillar": "Attention Engineering",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "Recognizing thermal throttling in your own focus.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Script Ready",
-      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Has not reached the human review firewall yet." },
-      "agentState": { "stage": "Script Ready", "assignedAgent": "script-agent (mock)", "note": "Script drafting is mocked.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Not Reached",
+        "reviewer": null,
+        "note": "Has not reached the human review firewall yet."
+      },
+      "agentState": {
+        "stage": "Script Ready",
+        "assignedAgent": "script-agent (mock)",
+        "note": "Script drafting is mocked.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -191,9 +401,26 @@
       "summary": "Why one heavy thread beats many shallow ones.",
       "authorityPillar": "Attention Engineering",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "Why one heavy thread beats many shallow ones.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Blueprint Ready",
-      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Awaiting Phase 03 human blueprint approval firewall." },
-      "agentState": { "stage": "Blueprint Ready", "assignedAgent": "blueprint-agent (mock)", "note": "Blueprint drafting is mocked.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Not Reached",
+        "reviewer": null,
+        "note": "Awaiting Phase 03 human blueprint approval firewall."
+      },
+      "agentState": {
+        "stage": "Blueprint Ready",
+        "assignedAgent": "blueprint-agent (mock)",
+        "note": "Blueprint drafting is mocked.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -202,9 +429,26 @@
       "summary": "The hidden cost of reloading state between tasks.",
       "authorityPillar": "Decision OS",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "The hidden cost of reloading state between tasks.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Blueprint Ready",
-      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Awaiting Phase 03 human blueprint approval firewall." },
-      "agentState": { "stage": "Blueprint Ready", "assignedAgent": "blueprint-agent (mock)", "note": "Blueprint drafting is mocked.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Not Reached",
+        "reviewer": null,
+        "note": "Awaiting Phase 03 human blueprint approval firewall."
+      },
+      "agentState": {
+        "stage": "Blueprint Ready",
+        "assignedAgent": "blueprint-agent (mock)",
+        "note": "Blueprint drafting is mocked.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -213,9 +457,26 @@
       "summary": "How to make a lesson actually persist past tomorrow.",
       "authorityPillar": "Memory Systems",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "How to make a lesson actually persist past tomorrow.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Researching",
-      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "In discovery; no human gate reached." },
-      "agentState": { "stage": "Researching", "assignedAgent": "intelligence-engine (mock)", "note": "Opportunity discovery is mocked.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Not Reached",
+        "reviewer": null,
+        "note": "In discovery; no human gate reached."
+      },
+      "agentState": {
+        "stage": "Researching",
+        "assignedAgent": "intelligence-engine (mock)",
+        "note": "Opportunity discovery is mocked.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -224,9 +485,26 @@
       "summary": "What consolidation does and why all-nighters corrupt files.",
       "authorityPillar": "Memory Systems",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "What consolidation does and why all-nighters corrupt files.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Researching",
-      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "In discovery; no human gate reached." },
-      "agentState": { "stage": "Researching", "assignedAgent": "intelligence-engine (mock)", "note": "Opportunity discovery is mocked.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Not Reached",
+        "reviewer": null,
+        "note": "In discovery; no human gate reached."
+      },
+      "agentState": {
+        "stage": "Researching",
+        "assignedAgent": "intelligence-engine (mock)",
+        "note": "Opportunity discovery is mocked.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -235,9 +513,26 @@
       "summary": "How the reward signal gets hijacked and how to re-aim it.",
       "authorityPillar": "Decision OS",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "How the reward signal gets hijacked and how to re-aim it.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Researching",
-      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "In discovery; no human gate reached." },
-      "agentState": { "stage": "Researching", "assignedAgent": "intelligence-engine (mock)", "note": "Opportunity discovery is mocked.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Not Reached",
+        "reviewer": null,
+        "note": "In discovery; no human gate reached."
+      },
+      "agentState": {
+        "stage": "Researching",
+        "assignedAgent": "intelligence-engine (mock)",
+        "note": "Opportunity discovery is mocked.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -246,9 +541,26 @@
       "summary": "Changing the interpretation without changing the facts.",
       "authorityPillar": "Mental Models",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "Changing the interpretation without changing the facts.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Not Started",
-      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Not yet entered the production line." },
-      "agentState": { "stage": "Not Started", "assignedAgent": "intake-agent", "note": "Queued at campaign intake.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Not Reached",
+        "reviewer": null,
+        "note": "Not yet entered the production line."
+      },
+      "agentState": {
+        "stage": "Not Started",
+        "assignedAgent": "intake-agent",
+        "note": "Queued at campaign intake.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -257,9 +569,26 @@
       "summary": "Why willpower degrades and how to schedule around it.",
       "authorityPillar": "Decision OS",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "Why willpower degrades and how to schedule around it.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Not Started",
-      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Not yet entered the production line." },
-      "agentState": { "stage": "Not Started", "assignedAgent": "intake-agent", "note": "Queued at campaign intake.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Not Reached",
+        "reviewer": null,
+        "note": "Not yet entered the production line."
+      },
+      "agentState": {
+        "stage": "Not Started",
+        "assignedAgent": "intake-agent",
+        "note": "Queued at campaign intake.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -268,9 +597,26 @@
       "summary": "Offloading state so working memory can breathe.",
       "authorityPillar": "Memory Systems",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "Offloading state so working memory can breathe.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Not Started",
-      "review": { "required": true, "decision": "Not Reached", "reviewer": null, "note": "Not yet entered the production line." },
-      "agentState": { "stage": "Not Started", "assignedAgent": "intake-agent", "note": "Queued at campaign intake.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Not Reached",
+        "reviewer": null,
+        "note": "Not yet entered the production line."
+      },
+      "agentState": {
+        "stage": "Not Started",
+        "assignedAgent": "intake-agent",
+        "note": "Queued at campaign intake.",
+        "mock": true
+      },
       "mock": true
     },
     {
@@ -279,9 +625,26 @@
       "summary": "Deep change vs. surface tweaks — and the risk of a bad flash.",
       "authorityPillar": "Cognitive Architecture",
       "targetDurationSeconds": 60,
+      "creativeIntent": {
+        "audience": "Self-improvement audiences",
+        "message": "Deep change vs. surface tweaks — and the risk of a bad flash.",
+        "objective": "Educate readers on practical cognitive-science mental models and drive ebook launch awareness.",
+        "format": "60-second faceless vertical video",
+        "callToAction": "Read \"The Mind Is a Computer\" to go deeper."
+      },
       "status": "Blocked",
-      "review": { "required": true, "decision": "Rejected", "reviewer": "human-reviewer (placeholder)", "note": "Blocked pending source-claim verification (mock compliance hold)." },
-      "agentState": { "stage": "Blocked", "assignedAgent": "compliance-agent (mock)", "note": "Held by mock compliance check; documented reason required.", "mock": true },
+      "review": {
+        "required": true,
+        "decision": "Rejected",
+        "reviewer": "human-reviewer (placeholder)",
+        "note": "Blocked pending source-claim verification (mock compliance hold)."
+      },
+      "agentState": {
+        "stage": "Blocked",
+        "assignedAgent": "compliance-agent (mock)",
+        "note": "Held by mock compliance check; documented reason required.",
+        "mock": true
+      },
       "mock": true
     }
   ]

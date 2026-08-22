@@ -124,7 +124,7 @@ function main(argv: string[]): void {
 
   const c = result.campaign;
   process.stdout.write(
-    `campaign valid: "${c.name}" — ${c.videos.length} videos (exactly ${REQUIRED_VIDEO_COUNT}), ` +
+    `campaign valid: "${c.name}" — ${c.videos.length} videos (exactly ${c.targetVideoCount}), ` +
       `status model OK, dataSource=${c.provenance.dataSource}.\n`,
   );
 }

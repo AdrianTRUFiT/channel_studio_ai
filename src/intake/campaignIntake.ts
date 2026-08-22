@@ -165,19 +165,33 @@ export function buildCampaignFromIntake(input: IntakeInput): Campaign {
       "60-second faceless vertical video",
   };
 
+  // A single-video campaign IS the governed assignment itself — there is no
+  // "angle" to diversify against, so the video's title/message must be the
+  // operator's own topic and core message verbatim, not a generic template
+  // variation of them. Multi-video campaigns (count > 1, the default 20-idea
+  // bulk-generation path) are completely unaffected by this branch: every
+  // existing test exercises count > 1 and hits the original angle-cycling
+  // code path unchanged.
+  const isSingleAssignment = count === 1;
+
   const videos: VideoAsset[] = Array.from({ length: count }, (_, i) => {
     const angle = ANGLES[i % ANGLES.length];
     const cycle = Math.floor(i / ANGLES.length);
-    const title = cycle === 0 ? angle.title(topic) : `${angle.title(topic)} (Part ${cycle + 1})`;
+    const title = isSingleAssignment
+      ? topic
+      : cycle === 0
+        ? angle.title(topic)
+        : `${angle.title(topic)} (Part ${cycle + 1})`;
+    const summary = isSingleAssignment ? contentBrief.coreMessage : angle.summary(topic);
     return {
       id: `${prefix}-${String(i + 1).padStart(pad, "0")}`,
       title,
-      summary: angle.summary(topic),
+      summary,
       authorityPillar: pillars[i % pillars.length],
       targetDurationSeconds: 60,
       creativeIntent: {
         audience: contentBrief.audiences[0],
-        message: angle.summary(topic),
+        message: summary,
         objective: contentBrief.objective,
         format: contentBrief.defaultFormat,
         callToAction: contentBrief.callToAction,

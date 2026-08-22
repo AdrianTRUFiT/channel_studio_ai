@@ -114,14 +114,40 @@ The campaign state model is governed under `src/campaign/` and validated by
 
 ## Campaign intake (operator)
 
-The deterministic **Campaign Intake Engine** turns an operator topic into a
-governed, schema-valid campaign — no UI required; CLI, desktop, and web
+The deterministic **Campaign Intake Engine** turns a governed content brief
+into a schema-valid campaign — no UI required; CLI, desktop, and web
 front-ends all call the same core (`src/intake/campaignIntake.ts`).
 
 ```bash
 npm run intake -- --topic "Sleep Optimization for Founders"                # 20 videos (default)
 npm run intake -- --topic "Chess Openings" --count 10 --mode smoke         # custom count/mode
 ```
+
+### Operator web form (`npm run dev` → "Create Campaign" tab)
+
+Running the local dev server exposes a real intake **form** — no JSON editing,
+no terminal — covering the full governed `contentBrief` contract: Project /
+Campaign, Assignment / Topic, Audience, Objective, Core Message, Format, CTA,
+Content Principles, Source Authority, Claim Constraints, Video Count, and
+Production Mode. Submitting POSTs to a Vite dev-middleware endpoint
+(`web/server/intakeApi.js`) that calls the exact same `runIntake()` used by
+the CLI — no parallel/duplicated logic. A campaign selector then lets the
+operator switch the whole dashboard to whatever campaign they just created.
+
+This API only exists on `vite dev` (Vite's `configureServer` hook is dev-only);
+a static/preview build has no write backend, so the dashboard degrades
+honestly — the "Create Campaign" tab reports that campaign creation needs the
+local dev server, and every other tab falls back to the campaign bundled at
+build time, exactly as before this feature existed.
+
+**Video Count = 1 is the smallest deterministic proof of a real assignment**:
+the single video's title/message become the operator's own topic and core
+message verbatim (not a generic angle-template variation) — see
+`data/campaigns/built-for-pressure.campaign.json` for a worked example built
+from an operator-provided Mind Warriors brief (its `contentBrief.sourceAuthority`
+is explicit that this is *not* independently verified against the Mind
+Warriors Communications Hub repository — this session had no access to it).
+`videoCount > 1` is unchanged: a bulk multi-angle campaign from one topic.
 
 Outputs: `data/campaigns/<slug>.campaign.json` (governed campaign, validated
 against the campaign/video/agent-state schemas before writing) and an intake
