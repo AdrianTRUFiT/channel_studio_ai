@@ -9,6 +9,7 @@
     "name",
     "product",
     "brandPillars",
+    "contentBrief",
     "targetVideoCount",
     "status",
     "createdAt",
@@ -34,7 +35,44 @@
       "minItems": 1,
       "items": { "type": "string", "minLength": 1 }
     },
-    "targetVideoCount": { "type": "integer" },
+    "contentBrief": {
+      "type": "object",
+      "required": [
+        "objective",
+        "audiences",
+        "coreMessage",
+        "callToAction",
+        "contentPrinciples",
+        "sourceAuthority",
+        "claimConstraints",
+        "defaultFormat"
+      ],
+      "properties": {
+        "objective": { "type": "string", "minLength": 1 },
+        "audiences": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "coreMessage": { "type": "string", "minLength": 1 },
+        "callToAction": { "type": "string", "minLength": 1 },
+        "contentPrinciples": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "sourceAuthority": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "claimConstraints": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "defaultFormat": { "type": "string", "minLength": 1 }
+      }
+    },    "targetVideoCount": { "type": "integer" },
     "status": {
       "type": "string",
       "enum": [
@@ -101,3 +139,4 @@
     }
   }
 }
+

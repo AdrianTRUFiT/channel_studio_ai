@@ -10,6 +10,7 @@
     "summary",
     "authorityPillar",
     "targetDurationSeconds",
+    "creativeIntent",
     "status",
     "review",
     "agentState",
@@ -21,7 +22,23 @@
     "summary": { "type": "string", "minLength": 1 },
     "authorityPillar": { "type": "string", "minLength": 1 },
     "targetDurationSeconds": { "type": "integer" },
-    "status": {
+    "creativeIntent": {
+      "type": "object",
+      "required": [
+        "audience",
+        "message",
+        "objective",
+        "format",
+        "callToAction"
+      ],
+      "properties": {
+        "audience": { "type": "string", "minLength": 1 },
+        "message": { "type": "string", "minLength": 1 },
+        "objective": { "type": "string", "minLength": 1 },
+        "format": { "type": "string", "minLength": 1 },
+        "callToAction": { "type": "string", "minLength": 1 }
+      }
+    },    "status": {
       "type": "string",
       "enum": [
         "Not Started",
@@ -55,3 +72,4 @@
     "mock": { "type": "boolean", "const": true }
   }
 }
+
