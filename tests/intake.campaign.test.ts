@@ -1,5 +1,5 @@
 /**
- * Shift 02 — Campaign Intake Engine tests.
+ * Shift 02 â€” Campaign Intake Engine tests.
  *
  * Proves: deterministic operator-input processing, schema-valid campaign
  * generation, downstream pipeline integration (production package builds from
@@ -47,6 +47,34 @@ test("generated campaign is schema-valid with the default 20 videos", () => {
   assert.equal(c.maps.approvalFirewalls.length, 2);
 });
 
+test("governed content brief is preserved at campaign and video level", () => {
+  const c = buildCampaignFromIntake({
+    topic: "Built for Pressure",
+    videoCount: 2,
+    now: FIXED_NOW,
+    productTitle: "Built for Pressure Pilot",
+    productType: "pilot",
+    contentBrief: {
+      objective: "Move audiences from awareness into meaningful participation.",
+      audiences: ["Athletes", "Coaches", "Parents", "Strategic Partners"],
+      coreMessage: "Pressure can be intentionally trained through sport.",
+      callToAction: "Train The Mind.",
+      contentPrinciples: ["Authentic", "Coach-like", "Evidence-driven", "Clear"],
+      sourceAuthority: ["Mind Warriors Communications Hub"],
+      claimConstraints: ["Do not publish unverified performance claims."],
+      defaultFormat: "60-second vertical video",
+    },
+  });
+
+  assert.deepEqual(validateCampaignObject(c), []);
+  assert.equal(c.contentBrief.objective, "Move audiences from awareness into meaningful participation.");
+  assert.deepEqual(c.contentBrief.audiences, ["Athletes", "Coaches", "Parents", "Strategic Partners"]);
+  assert.equal(c.contentBrief.callToAction, "Train The Mind.");
+  assert.equal(c.videos[0].creativeIntent.audience, "Athletes");
+  assert.equal(c.videos[0].creativeIntent.objective, c.contentBrief.objective);
+  assert.equal(c.videos[0].creativeIntent.callToAction, c.contentBrief.callToAction);
+  assert.equal(c.videos[0].creativeIntent.format, "60-second vertical video");
+});
 test("custom video count is honored and validates (non-20 campaigns)", () => {
   const c = buildCampaignFromIntake({ topic: "Cold Email Basics", videoCount: 7, now: FIXED_NOW });
   assert.deepEqual(validateCampaignObject(c), []);
@@ -71,9 +99,9 @@ test("titles stay unique when the count cycles past the angle templates", () => 
 test("id prefixes and render output ids do not collide with the sample campaign", () => {
   assert.equal(idPrefixFor("Sleep Optimization for Founders"), "SOF");
   assert.equal(slugify("Sleep Optimization for Founders"), "sleep-optimization-for-founders");
-  // Legacy alias preserved for the sample campaign…
+  // Legacy alias preserved for the sample campaignâ€¦
   assert.equal(outputIdFor("MIAC-01"), "tmiac-001");
-  // …while generated campaigns get their own namespace.
+  // â€¦while generated campaigns get their own namespace.
   assert.equal(outputIdFor("SOF-01"), "sof-001");
   assert.equal(outputIdFor("SOF-105"), "sof-105");
 });
@@ -120,3 +148,4 @@ test("NEGATIVE: a campaign whose videos do not match its declared target is reje
   const errors = validateCampaignObject(tampered);
   assert.ok(errors.some((e) => /exactly 5 videos/.test(e)), errors.join("\n"));
 });
+

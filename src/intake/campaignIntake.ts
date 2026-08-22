@@ -1,9 +1,9 @@
 /**
- * campaignIntake — the deterministic Campaign Intake Engine (Shift 02).
+ * campaignIntake â€” the deterministic Campaign Intake Engine (Shift 02).
  *
  * Converts operator input (topic, optional video count, optional production
  * mode) into a governed, schema-valid campaign that flows directly into the
- * existing pipeline (produce:videos, build:production) — no completed phase is
+ * existing pipeline (produce:videos, build:production) â€” no completed phase is
  * modified, no UI is assumed. CLI, desktop, and web front-ends all call this
  * same core.
  *
@@ -18,7 +18,7 @@ import { dirname, isAbsolute, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { VIDEO_STATUSES } from "../campaign/status.ts";
 import { validateCampaignObject } from "../campaign/campaign.ts";
-import type { Campaign, VideoAsset } from "../campaign/types.ts";
+import type { Campaign, ContentBrief, VideoAsset } from "../campaign/types.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 function repoRoot(): string {
@@ -85,7 +85,7 @@ export function idPrefixFor(topic: string): string {
 /** 20 deterministic angle templates, cycled for larger counts. */
 const ANGLES: ReadonlyArray<{ title: (t: string) => string; summary: (t: string) => string }> = [
   { title: (t) => `${t}: The Core Idea in 60 Seconds`, summary: (t) => `The one-sentence model behind ${t} and why it matters now.` },
-  { title: (t) => `The Biggest Myth About ${t}`, summary: (t) => `The most common misconception about ${t} — and what is actually true.` },
+  { title: (t) => `The Biggest Myth About ${t}`, summary: (t) => `The most common misconception about ${t} â€” and what is actually true.` },
   { title: (t) => `${t} for Complete Beginners`, summary: (t) => `A zero-jargon starting point for ${t} you can apply today.` },
   { title: (t) => `3 Mistakes Everyone Makes With ${t}`, summary: (t) => `The three most frequent ${t} mistakes and the fix for each.` },
   { title: (t) => `A Simple Framework for ${t}`, summary: (t) => `One repeatable framework that makes ${t} decisions easier.` },
@@ -141,6 +141,29 @@ export function buildCampaignFromIntake(input: IntakeInput): Campaign {
   const pad = count > 99 ? 3 : 2;
   const pillars = pillarsFor(topic);
 
+  const contentBrief: ContentBrief = {
+    objective: input.contentBrief?.objective ?? "Educate and engage the target audience.",
+    audiences: input.contentBrief?.audiences ?? ["General audience"],
+    coreMessage:
+      input.contentBrief?.coreMessage ??
+      `Explain ${topic} clearly, practically, and without unsupported claims.`,
+    callToAction:
+      input.contentBrief?.callToAction ??
+      `Follow for the next ${topic} breakdown.`,
+    contentPrinciples:
+      input.contentBrief?.contentPrinciples ??
+      ["Clear", "Useful", "Evidence-aware", "Human"],
+    sourceAuthority:
+      input.contentBrief?.sourceAuthority ??
+      ["operator-provided campaign topic"],
+    claimConstraints:
+      input.contentBrief?.claimConstraints ??
+      ["Do not introduce unsupported factual or causal claims."],
+    defaultFormat:
+      input.contentBrief?.defaultFormat ??
+      "60-second faceless vertical video",
+  };
+
   const videos: VideoAsset[] = Array.from({ length: count }, (_, i) => {
     const angle = ANGLES[i % ANGLES.length];
     const cycle = Math.floor(i / ANGLES.length);
@@ -151,6 +174,13 @@ export function buildCampaignFromIntake(input: IntakeInput): Campaign {
       summary: angle.summary(topic),
       authorityPillar: pillars[i % pillars.length],
       targetDurationSeconds: 60,
+      creativeIntent: {
+        audience: contentBrief.audiences[0],
+        message: angle.summary(topic),
+        objective: contentBrief.objective,
+        format: contentBrief.defaultFormat,
+        callToAction: contentBrief.callToAction,
+      },
       status: "Not Started",
       review: {
         required: true,
@@ -170,12 +200,13 @@ export function buildCampaignFromIntake(input: IntakeInput): Campaign {
 
   const campaign: Campaign = {
     id,
-    name: `${topic} — ${count} Faceless Video Campaign`,
+    name: `${topic} â€” ${count} Faceless Video Campaign`,
     product: {
       title: input.productTitle ?? topic,
       type: input.productType ?? "content-series",
     },
     brandPillars: pillars,
+    contentBrief,
     targetVideoCount: count,
     status: "Not Started",
     createdAt: now,
@@ -278,3 +309,4 @@ export function runIntake(input: IntakeInput, outDir?: string): IntakeResult {
     overwroteExisting,
   };
 }
+

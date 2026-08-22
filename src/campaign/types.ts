@@ -1,5 +1,5 @@
 /**
- * Phase 01 — Campaign state model types.
+ * Phase 01 â€” Campaign state model types.
  *
  * These mirror the JSON schemas in `schemas/` and the sample campaign data.
  * Nothing here is connected to a live system: every record is mock/prototype
@@ -13,7 +13,7 @@ export interface ReviewState {
   /** Whether human approval is required (a blocking MAPS firewall). */
   required: boolean;
   decision: ReviewDecision;
-  /** Approver identity placeholder — no auth in Phase 01. */
+  /** Approver identity placeholder â€” no auth in Phase 01. */
   reviewer: string | null;
   note: string;
 }
@@ -23,10 +23,29 @@ export interface AgentState {
   stage: VideoStatus;
   assignedAgent: string;
   note: string;
-  /** Always true in Phase 01 — no real agent has run. */
+  /** Always true in Phase 01 â€” no real agent has run. */
   mock: boolean;
 }
 
+
+export interface ContentBrief {
+  objective: string;
+  audiences: string[];
+  coreMessage: string;
+  callToAction: string;
+  contentPrinciples: string[];
+  sourceAuthority: string[];
+  claimConstraints: string[];
+  defaultFormat: string;
+}
+
+export interface CreativeIntent {
+  audience: string;
+  message: string;
+  objective: string;
+  format: string;
+  callToAction: string;
+}
 /** A single faceless video asset moving through the production line. */
 export interface VideoAsset {
   id: string;
@@ -34,10 +53,11 @@ export interface VideoAsset {
   summary: string;
   authorityPillar: string;
   targetDurationSeconds: number;
+  creativeIntent: CreativeIntent;
   status: VideoStatus;
   review: ReviewState;
   agentState: AgentState;
-  /** Always true in Phase 01 — this asset is not a real produced video. */
+  /** Always true in Phase 01 â€” this asset is not a real produced video. */
   mock: boolean;
 }
 
@@ -75,6 +95,7 @@ export interface Campaign {
   name: string;
   product: CampaignProduct;
   brandPillars: string[];
+  contentBrief: ContentBrief;
   targetVideoCount: number;
   status: VideoStatus;
   createdAt: string;
@@ -83,3 +104,4 @@ export interface Campaign {
   maps: MapsPosture;
   provenance: Provenance;
 }
+
