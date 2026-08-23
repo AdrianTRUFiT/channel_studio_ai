@@ -18,6 +18,13 @@ import { dirname, isAbsolute, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { VIDEO_STATUSES } from "../campaign/status.ts";
 import { validateCampaignObject } from "../campaign/campaign.ts";
+import {
+  LONG_ANCHOR_DURATION_SECONDS,
+  SHORT_DURATION_SECONDS,
+  TOPIC_CYCLE_SHORT_COUNT,
+  TOPIC_CYCLE_VIDEO_COUNT,
+  validateTopicCycleObject,
+} from "../campaign/topicCycle.ts";
 import type { Campaign, ContentBrief, VideoAsset } from "../campaign/types.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -31,10 +38,19 @@ export const MAX_VIDEO_COUNT = 200;
 /** Render-layer production modes the existing architecture supports. */
 export type ProductionMode = "smoke" | "full";
 
+/**
+ * Intake generation mode.
+ * "standard"    - the existing N-independent-videos generator (default).
+ * "topic-cycle" - exactly 1 evergreen long anchor + 7 derived shorts (8
+ *                 videos total), scheduled across a 7-day publishing cycle.
+ */
+export type IntakeCycleMode = "standard" | "topic-cycle";
+
 export interface IntakeInput {
   /** Required operator topic, e.g. "Sleep Optimization for Founders". */
   topic: string;
-  /** Number of governed video records (default 20, max 200). */
+  /** Number of governed video records (default 20, max 200). Ignored/must be
+   *  omitted or equal to 8 when `cycle` is "topic-cycle". */
   videoCount?: number;
   /** Optional render-layer mode recorded for the run (smoke|full). */
   mode?: ProductionMode;
@@ -44,6 +60,8 @@ export interface IntakeInput {
   contentBrief?: Partial<ContentBrief>;
   /** Injectable clock for byte-deterministic output (tests). */
   now?: Date;
+  /** "standard" (default) or "topic-cycle" (1 Key Topic -> 1 long anchor + 7 shorts). */
+  cycle?: IntakeCycleMode;
 }
 
 export interface IntakeResult {
@@ -122,20 +140,124 @@ function assertValidInput(input: IntakeInput): void {
   if (!input.topic || slugify(input.topic).length === 0) {
     throw new Error("intake: topic is required and must contain letters or digits");
   }
-  const count = input.videoCount ?? DEFAULT_VIDEO_COUNT;
-  if (!Number.isInteger(count) || count < 1 || count > MAX_VIDEO_COUNT) {
-    throw new Error(`intake: videoCount must be an integer between 1 and ${MAX_VIDEO_COUNT}, got ${input.videoCount}`);
+  const cycle = input.cycle ?? "standard";
+  if (cycle !== "standard" && cycle !== "topic-cycle") {
+    throw new Error(`intake: cycle must be "standard" or "topic-cycle", got "${String(input.cycle)}"`);
+  }
+  if (cycle === "topic-cycle") {
+    if (input.videoCount !== undefined && input.videoCount !== TOPIC_CYCLE_VIDEO_COUNT) {
+      throw new Error(
+        `intake: topic-cycle mode always generates exactly ${TOPIC_CYCLE_VIDEO_COUNT} videos ` +
+          `(1 evergreen long anchor + ${TOPIC_CYCLE_SHORT_COUNT} shorts); videoCount ${input.videoCount} was requested instead`,
+      );
+    }
+  } else {
+    const count = input.videoCount ?? DEFAULT_VIDEO_COUNT;
+    if (!Number.isInteger(count) || count < 1 || count > MAX_VIDEO_COUNT) {
+      throw new Error(`intake: videoCount must be an integer between 1 and ${MAX_VIDEO_COUNT}, got ${input.videoCount}`);
+    }
   }
   if (input.mode !== undefined && input.mode !== "smoke" && input.mode !== "full") {
     throw new Error(`intake: mode must be "smoke" or "full", got "${input.mode}"`);
   }
 }
 
+/**
+ * Build the 8 Topic Cycle videos for one Key Topic: 1 evergreen long anchor
+ * (Day 1) + 7 shorts derived from it (Day 1..Day 7). Reuses the same angle
+ * templates the standard generator uses, so shorts read as distinct,
+ * template-derived pieces rather than a duplicated long-form title.
+ */
+function buildTopicCycleVideos(args: {
+  topic: string;
+  contentBrief: ContentBrief;
+  prefix: string;
+  pad: number;
+}): VideoAsset[] {
+  const { topic, contentBrief, prefix, pad } = args;
+  const longId = `${prefix}-${String(1).padStart(pad, "0")}`;
+
+  const baseReview = {
+    required: true,
+    decision: "Not Reached" as const,
+    reviewer: null,
+    note: "Not yet entered the production line.",
+  };
+
+  const longAnchor: VideoAsset = {
+    id: longId,
+    title: topic,
+    summary: contentBrief.coreMessage,
+    authorityPillar: `${topic} Fundamentals`,
+    targetDurationSeconds: LONG_ANCHOR_DURATION_SECONDS,
+    creativeIntent: {
+      audience: contentBrief.audiences[0],
+      message: contentBrief.coreMessage,
+      objective: contentBrief.objective,
+      format: "Evergreen long-form faceless video",
+      callToAction: contentBrief.callToAction,
+    },
+    status: "Not Started",
+    review: { ...baseReview },
+    agentState: {
+      stage: "Not Started",
+      assignedAgent: "intake-agent",
+      note: "Queued at campaign intake (topic-cycle long anchor).",
+      mock: true,
+    },
+    mock: true,
+    assetRole: "long_anchor",
+    derivedFrom: null,
+    publishDay: 1,
+    evergreen: {
+      required: true,
+      state: "Verified",
+      note:
+        "Anchor authority asset for this Topic Cycle. Content is durable/non-time-bound by " +
+        "construction (template-derived core-topic framing, no dated or trend-bound claims).",
+    },
+  };
+
+  const shorts: VideoAsset[] = ANGLES.slice(0, TOPIC_CYCLE_SHORT_COUNT).map((angle, i) => {
+    const day = i + 1;
+    const summary = angle.summary(topic);
+    return {
+      id: `${prefix}-${String(day + 1).padStart(pad, "0")}`,
+      title: `${angle.title(topic)} (Short ${day})`,
+      summary,
+      authorityPillar: `${topic} Fundamentals`,
+      targetDurationSeconds: SHORT_DURATION_SECONDS,
+      creativeIntent: {
+        audience: contentBrief.audiences[0],
+        message: summary,
+        objective: contentBrief.objective,
+        format: "60-second faceless vertical short",
+        callToAction: contentBrief.callToAction,
+      },
+      status: "Not Started",
+      review: { ...baseReview },
+      agentState: {
+        stage: "Not Started",
+        assignedAgent: "intake-agent",
+        note: `Queued at campaign intake (topic-cycle short derived from ${longId}, Day ${day}).`,
+        mock: true,
+      },
+      mock: true,
+      assetRole: "short",
+      derivedFrom: longId,
+      publishDay: day,
+    };
+  });
+
+  return [longAnchor, ...shorts];
+}
+
 /** Build a governed, schema-valid campaign from operator input. Pure + deterministic. */
 export function buildCampaignFromIntake(input: IntakeInput): Campaign {
   assertValidInput(input);
   const topic = input.topic.trim();
-  const count = input.videoCount ?? DEFAULT_VIDEO_COUNT;
+  const cycleMode: IntakeCycleMode = input.cycle ?? "standard";
+  const count = cycleMode === "topic-cycle" ? TOPIC_CYCLE_VIDEO_COUNT : (input.videoCount ?? DEFAULT_VIDEO_COUNT);
   const now = (input.now ?? new Date()).toISOString();
   const id = slugify(topic);
   const prefix = idPrefixFor(topic);
@@ -174,48 +296,54 @@ export function buildCampaignFromIntake(input: IntakeInput): Campaign {
   // code path unchanged.
   const isSingleAssignment = count === 1;
 
-  const videos: VideoAsset[] = Array.from({ length: count }, (_, i) => {
-    const angle = ANGLES[i % ANGLES.length];
-    const cycle = Math.floor(i / ANGLES.length);
-    const title = isSingleAssignment
-      ? topic
-      : cycle === 0
-        ? angle.title(topic)
-        : `${angle.title(topic)} (Part ${cycle + 1})`;
-    const summary = isSingleAssignment ? contentBrief.coreMessage : angle.summary(topic);
-    return {
-      id: `${prefix}-${String(i + 1).padStart(pad, "0")}`,
-      title,
-      summary,
-      authorityPillar: pillars[i % pillars.length],
-      targetDurationSeconds: 60,
-      creativeIntent: {
-        audience: contentBrief.audiences[0],
-        message: summary,
-        objective: contentBrief.objective,
-        format: contentBrief.defaultFormat,
-        callToAction: contentBrief.callToAction,
-      },
-      status: "Not Started",
-      review: {
-        required: true,
-        decision: "Not Reached",
-        reviewer: null,
-        note: "Not yet entered the production line.",
-      },
-      agentState: {
-        stage: "Not Started",
-        assignedAgent: "intake-agent",
-        note: "Queued at campaign intake (operator-generated campaign).",
-        mock: true,
-      },
-      mock: true,
-    };
-  });
+  const videos: VideoAsset[] =
+    cycleMode === "topic-cycle"
+      ? buildTopicCycleVideos({ topic, contentBrief, prefix, pad })
+      : Array.from({ length: count }, (_, i) => {
+          const angle = ANGLES[i % ANGLES.length];
+          const cycle = Math.floor(i / ANGLES.length);
+          const title = isSingleAssignment
+            ? topic
+            : cycle === 0
+              ? angle.title(topic)
+              : `${angle.title(topic)} (Part ${cycle + 1})`;
+          const summary = isSingleAssignment ? contentBrief.coreMessage : angle.summary(topic);
+          return {
+            id: `${prefix}-${String(i + 1).padStart(pad, "0")}`,
+            title,
+            summary,
+            authorityPillar: pillars[i % pillars.length],
+            targetDurationSeconds: 60,
+            creativeIntent: {
+              audience: contentBrief.audiences[0],
+              message: summary,
+              objective: contentBrief.objective,
+              format: contentBrief.defaultFormat,
+              callToAction: contentBrief.callToAction,
+            },
+            status: "Not Started",
+            review: {
+              required: true,
+              decision: "Not Reached",
+              reviewer: null,
+              note: "Not yet entered the production line.",
+            },
+            agentState: {
+              stage: "Not Started",
+              assignedAgent: "intake-agent",
+              note: "Queued at campaign intake (operator-generated campaign).",
+              mock: true,
+            },
+            mock: true,
+          };
+        });
 
   const campaign: Campaign = {
     id,
-    name: `${topic} â€” ${count} Faceless Video Campaign`,
+    name:
+      cycleMode === "topic-cycle"
+        ? `${topic} - Weekly Topic Cycle (1 Evergreen Long Video + 7 Shorts)`
+        : `${topic} â€” ${count} Faceless Video Campaign`,
     product: {
       title: input.productTitle ?? topic,
       type: input.productType ?? "content-series",
@@ -258,6 +386,9 @@ export function buildCampaignFromIntake(input: IntakeInput): Campaign {
   };
 
   const errors = validateCampaignObject(campaign);
+  if (cycleMode === "topic-cycle") {
+    errors.push(...validateTopicCycleObject(campaign));
+  }
   if (errors.length > 0) {
     throw new Error(`intake: generated campaign failed validation:\n  ${errors.join("\n  ")}`);
   }
@@ -297,6 +428,7 @@ export function runIntake(input: IntakeInput, outDir?: string): IntakeResult {
   const manifest = {
     campaignId: campaign.id,
     topic: input.topic.trim(),
+    cycle: input.cycle ?? "standard",
     videoCount: campaign.targetVideoCount,
     mode: input.mode ?? "full",
     productTitle: campaign.product.title,

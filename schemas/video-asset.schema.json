@@ -69,7 +69,19 @@
       }
     },
     "agentState": { "type": "object" },
-    "mock": { "type": "boolean", "const": true }
+    "mock": { "type": "boolean", "const": true },
+    "assetRole": { "type": "string", "enum": ["long_anchor", "short"] },
+    "derivedFrom": { "type": ["string", "null"] },
+    "publishDay": { "type": "integer", "minimum": 1, "maximum": 7 },
+    "evergreen": {
+      "type": "object",
+      "required": ["required", "state", "note"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "state": { "type": "string", "enum": ["Pending", "Verified", "Failed"] },
+        "note": { "type": "string", "minLength": 1 }
+      }
+    }
   }
 }
 

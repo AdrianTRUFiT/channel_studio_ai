@@ -6,10 +6,10 @@
 
 - **Phase:** 01 — Campaign Intake and State Model
 - **Status:** PASS
-- **Timestamp:** 2026-08-22T22:13:28.631Z
+- **Timestamp:** 2026-08-23T21:03:46.057Z
 - **Gate script:** `gates/check_phase_01.sh`
-- **Git commit:** 7a02980b7252ee74ee51913cc6ec378de0ceebdf
-- **Content hash:** `sha256:5012a30c2895741a11ff74b9bb89d1251433512098c07f8a9346d543cc72eef4`
+- **Git commit:** 023fe89c65531956f28c22c914f00325f047bbb5
+- **Content hash:** `sha256:4bcfdb7598fe003560c3ebd8f86be932b98f7745a54a8dde8b9ef5ba137c8b0d`
 - **Hashed outputs:** `data/campaigns/the-mind-is-a-computer.campaign.json`, `schemas/campaign.schema.json`, `schemas/video-asset.schema.json`, `schemas/agent-state.schema.json`, `src/campaign/status.ts`, `src/campaign/types.ts`, `src/campaign/campaign.ts`, `web/package.json`, `web/vite.config.js`, `web/index.html`, `web/src/main.jsx`, `web/src/App.jsx`, `gates/check_phase_01.sh`, `tests/phase_01.campaign.test.ts`
 - **Test summary:** Phase 00 current; campaign schema/data valid; exactly 20 videos; tsc --noEmit clean; node --test (Phase 00+01) passed; vite build ok
 - **Next unlocked phase:** 02
@@ -19,10 +19,10 @@
   "phaseId": "01",
   "phaseName": "Campaign Intake and State Model",
   "status": "PASS",
-  "timestamp": "2026-08-22T22:13:28.631Z",
+  "timestamp": "2026-08-23T21:03:46.057Z",
   "gateScript": "gates/check_phase_01.sh",
-  "gitCommit": "7a02980b7252ee74ee51913cc6ec378de0ceebdf",
-  "contentHash": "sha256:5012a30c2895741a11ff74b9bb89d1251433512098c07f8a9346d543cc72eef4",
+  "gitCommit": "023fe89c65531956f28c22c914f00325f047bbb5",
+  "contentHash": "sha256:4bcfdb7598fe003560c3ebd8f86be932b98f7745a54a8dde8b9ef5ba137c8b0d",
   "hashedOutputs": [
     "data/campaigns/the-mind-is-a-computer.campaign.json",
     "schemas/campaign.schema.json",
